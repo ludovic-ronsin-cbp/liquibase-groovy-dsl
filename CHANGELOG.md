@@ -1,3 +1,9 @@
+Changes for 2.0.0
+=================
+- This DSL no longer has a transitive dependency on Liquibase itself.  **This is
+  a breaking change!**  It is now up to you make sure Liquibase is on the 
+  classpath, but you can now use whatever version of Liquibase you need.
+  
 Changes for 1.2.2
 =================
 - Added support for property tokens in ```changeSet```, ```include```, and

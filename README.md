@@ -5,22 +5,25 @@
 A pluggable parser for [Liquibase](http://liquibase.org) that allows the
 creation of changelogs in a Groovy DSL, rather than hurtful XML. If this DSL
 isn't reason enough to adopt Liquibase, then there is no hope for you.  This
-project was started by Tim Berglund, and is currently maintained by Steve
+project was started once upon a time by Tim Berglund, and is currently maintained by Steve
 Saliman.
 
 ## News
 
-### February 23, 2017
+### June 3, 2018
+Release 2.0.0 of the Groovy DSL decouples the DSL from any particular version
+of Liquibase, making it easier for users to take advantage of new releases of
+Liquibase as soon as they are released.  Note that the DSL itself is compiled 
+and tested against a specific version of Liquibase (currently 3.4.2), so YMMV
+with regard to newer releases.  **NOTE** The Groovy DSL no longer includes 
+Liquibase itself as a dependency.  Users must make sure the desired version of
+Liquibase is on the classpath.
+
+###February 23, 2017
 Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
 See the CHANGELOG for more details.  Note that if you use this DSL via the 
 Gradle Liquibase plugin, you will need version 1.2.3 of that plugin NOT 1.2.2,
 as that version has a broken dependency on the SNAPSHOT version of the DSL. 
-
-### November 30, 2015
-The Liquibase Groovy DSL now supports Liquibase 3.4.2.
-
-### August 3, 2015
-The Liquibase Groovy DSL now supports Liquibase 3.3.5.
 
 ### May 16, 2015
 We are proud to announce that the Liquibase Groovy DSL is now a part of the 
@@ -35,42 +38,10 @@ Liquibase artifacts.  A special thank you to Nathan Voxland for his help and
 support in bringing the Liquibase project and the Groovy DSL together into one 
 home.
  
-### March 9, 2015
-The Liquibase Groovy DSL now supports Liquibase 3.3.2, and is built with Groovy
-2.4.1.  Version 1.0.2 fixes a bug with version 1.0.1 that prevented it from
-working with Java 7 or earlier.
-
-**IMPORTANT NOTE FOR USERS UPGRADING FROM A PRE 1.0.0 RELEASE OF THE GROOVY DSL:**
-
-Version 1.0.0 of the Groovy Liquibase DSL uses Liquibase 3, instead of Liquibase
-2, and several things have been deprecated from the Groovy DSL to maintain
-compatibility with Liquibase XML. A list of deprecated items can be found in the
-*Usage* section.  To upgrade to version 1.0.0, we strongly recommend the
-following procedure:
-
-1. Make sure all of your Liquibase managed databases are up to date by running
-   an update on them *before upgrading the Groovy DSL*.
-
-2. Create a new, throw away database to test your Liquibase change sets.  Run
-   an update on this new database with the latest version of the Groovy DSL.
-   This is important because of the deprecated items in the Groovy DSL, and
-   because there are some subtle differences in the ways the different Liquibase
-   versions generate SQL.  For example, adding a default value to a boolean
-   column in MySql using ```defaultValue: "0"``` worked fine in Liquibase 2, but
-   in Liquibase 3, it generates SQL that doesn't work for MySql;
-   ```defaultValueNumeric: 0``` needs to be used instead.
-
-3. Once you are sure all of your change sets work with the latest Groovy DSL and
-   Liquibase 3, clear all checksums that were calculated by Liquibase 2 by using
-   the `clearChecksums` command in all databases.
-
-4. Finally, run a `changeLogSync` on all databases to calculate new
-    checksums.
-
 ## Usage
-Simply include this project's jar file in your class path, and Liquibase can
-parse elegant Groovy changelogs instead of ugly XML ones. The DSL syntax is 
-intended to mirror the [Liquibase XML]
+Simply include this project's jar file in your class path, along with a version
+of Liquibase, and Liquibase can parse elegant Groovy changelogs instead of ugly
+XML ones. The DSL syntax is intended to mirror the [Liquibase XML]
 (http://www.liquibase.org/documentation/databasechangelog.html) syntax directly,
 such that mapping elements and attributes from the Liquibase documentation to
 Groovy builder syntax will result in a valid changelog. Hence this DSL is not
