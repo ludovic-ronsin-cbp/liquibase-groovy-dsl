@@ -226,8 +226,17 @@ class DatabaseChangeLogDelegate {
 			}
 
 			// Filter the list to just the groovy files and include each one.
-			resources.findAll({it.endsWith('.groovy')}).each {
-				includeChangeLog(it);
+			resources.findAll({it.endsWith('.groovy')}).each { filename ->
+				// Liquibase's resource accessor will return files with
+				// absolute paths.  We need to fix this when we were looking
+				// for files in a directory that was relative to the working
+				// directory.  In this case, we want files that are also
+				// relative to the working directory.
+				if ( !dirName.startsWith("classpath") &&
+						!dirName.startsWith("/") && !isRelativeToChangelogFile) {
+					filename = filename.substring(filename.indexOf(dirName))
+				}
+				includeChangeLog(filename)
 			}
 		} catch (Exception e) {
 			throw new ChangeLogParseException("DatabaseChangeLog: error processing includeAll path '${dirName}.", e);
