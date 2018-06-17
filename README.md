@@ -19,6 +19,16 @@ with regard to newer releases.  **NOTE** The Groovy DSL no longer includes
 Liquibase itself as a dependency.  Users must make sure the desired version of
 Liquibase is on the classpath.
 
+*Note* There was a bug introduced in version 1.2.2 of the parser regarding 
+filenames and the `includeAll` change that was fixed in the 2.0.0 release.
+Prior to version 1.2.2, filenames for included changesets were relative to the
+working directory whenever the directory passed to `includeAll` was relative to
+the working directory.  In version 1.2.2, all filenames became absolute paths,
+which is not what we want.  This has been fixed in version 2.0.0, but if you
+have changesets that were run with version 1.2.2 of the parser, version 2.0.0
+will try to run them again, which means you'll probably need to fix some of the
+paths in the DATABASECHANGELOG table.
+
 ###February 23, 2017
 Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
 See the CHANGELOG for more details.  Note that if you use this DSL via the 
