@@ -32,6 +32,7 @@ import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.resource.FileSystemResourceAccessor
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 import java.lang.reflect.Field
@@ -49,6 +50,7 @@ import static org.junit.Assert.assertTrue
  */
 class DatabaseChangeLogDelegateTests {
 	static final FILE_PATH = "src/test/changelog"
+	static final TMP_INCLUDE_PATH = FILE_PATH + "/tmp/"
 	static final RESOURCE_PATH = "classpath:changelog"  // in resources
 	static final TMP_CHANGELOG_DIR = new File("${FILE_PATH}/tmp")
 	static final TMP_INCLUDE_DIR = new File("${TMP_CHANGELOG_DIR}/include")
@@ -568,14 +570,18 @@ databaseChangeLog {
 		assertTrue preconditions[0] instanceof DBMSPrecondition
 		assertTrue preconditions[1] instanceof RunningAsPrecondition
 	}
+
 	/**
 	 * Try including all files in a directory.  For this test, we want 2 files
-	 * to make sure we include them both, and in the right order.  Note: when
-	 * other tests throw exceptions, this test may also fail because of unclean
-	 * directories.  Fix the other tests first.
+	 * to make sure we include them both, and in the right order.  This test
+	 * does things with absolute paths so we can verify that the DSL preserves
+	 * the absolute paths.
+	 * <p>
+	 * Note: when other tests throw exceptions, this test may also fail because
+	 * of unclean directories.  Fix the other tests first.
 	 */
 	@Test
-	void includeAllValid() {
+	void includeAllValidAbsolutePath() {
 		def includedChangeLogDir = createIncludedChangeLogFiles()
 
 		def rootChangeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
@@ -591,7 +597,8 @@ databaseChangeLog {
   }
 }
 """)
-
+		// Make sure we actually started with an absolute path
+		assertTrue includedChangeLogDir.startsWith("/")
 		def parser = parserFactory.getParser(rootChangeLogFile.absolutePath, resourceAccessor)
 		def rootChangeLog = parser.parse(rootChangeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
 
@@ -603,20 +610,81 @@ databaseChangeLog {
 		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
 		assertEquals ROOT_CHANGE_SET, changeSets[2].id
 
+		// Check that the paths of the 2 included change sets are absolute.
+		assertTrue changeSets[0].filePath.startsWith("/")
+		assertTrue changeSets[1].filePath.startsWith("/")
+
 		def preconditions = rootChangeLog.preconditionContainer?.nestedPreconditions
 		assertNotNull preconditions
 		assertEquals 2, preconditions.size()
 		assertTrue preconditions[0] instanceof DBMSPrecondition
 		assertTrue preconditions[1] instanceof RunningAsPrecondition
 	}
+
 	/**
 	 * Try including all files in a directory.  For this test, we want 2 files
-	 * to make sure we include them both, and in the right order.  Note: when
-	 * other tests throw exceptions, this test may also fail because of unclean
-	 * directories.  Fix the other tests first.
+	 * to make sure we include them both, and in the right order.  This test
+	 * does things with relative paths so we can verify that the DSL preserves
+	 * the relative paths instead of converting them to absolute paths.
+	 * <p>
+	 * Note: when other tests throw exceptions, this test may also fail because
+	 * of unclean directories.  Fix the other tests first.
 	 */
 	@Test
-	void includeAllWithValidToken() {
+	void includeAllValidRelativeToWorkingDir() {
+		createIncludedChangeLogFiles()
+		def includedChangeLogPath = TMP_INCLUDE_DIR.path
+
+		def rootChangeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
+databaseChangeLog {
+  preConditions {
+    dbms(type: 'mysql')
+  }
+  includeAll(path: '${includedChangeLogPath}')
+  changeSet(author: 'ssaliman', id: '${ROOT_CHANGE_SET}') {
+    addColumn(tableName: 'monkey') {
+      column(name: 'emotion', type: 'varchar(50)')
+    }
+  }
+}
+""")
+		// Make sure we actually started with an absolute path
+		assertTrue includedChangeLogPath.startsWith(FILE_PATH)
+		def parser = parserFactory.getParser(rootChangeLogFile.absolutePath, resourceAccessor)
+		def rootChangeLog = parser.parse(rootChangeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
+
+		assertNotNull rootChangeLog
+		def changeSets = rootChangeLog.changeSets
+		assertNotNull changeSets
+		assertEquals 3, changeSets.size()
+		assertEquals FIRST_INCLUDED_CHANGE_SET, changeSets[0].id
+		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
+		assertEquals ROOT_CHANGE_SET, changeSets[2].id
+
+		// Check that the paths of the 2 included change sets are absolute.
+		// The 3rd change set did not come from the "includeAll", so it won't
+		// necessarily be relative.
+		assertTrue changeSets[0].filePath.startsWith(FILE_PATH)
+		assertTrue changeSets[1].filePath.startsWith(FILE_PATH)
+
+
+		def preconditions = rootChangeLog.preconditionContainer?.nestedPreconditions
+		assertNotNull preconditions
+		assertEquals 2, preconditions.size()
+		assertTrue preconditions[0] instanceof DBMSPrecondition
+		assertTrue preconditions[1] instanceof RunningAsPrecondition
+	}
+
+	/**
+	 * Try including all files in a directory.  For this test, we want 2 files
+	 * to make sure we include them both, and in the right order.  This test
+	 * makes sure that tokens don't affect absolute paths.
+	 * <p>
+	 * Note: when other tests throw exceptions, this test may also fail because
+	 * of unclean directories.  Fix the other tests first.
+	 */
+	@Test
+	void includeAllWithValidTokenAbsolute() {
 		def includedChangeLogDir = createIncludedChangeLogFiles()
 
 		def rootChangeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
@@ -634,6 +702,7 @@ databaseChangeLog {
 }
 """)
 
+		assertTrue includedChangeLogDir.startsWith("/")
 		def parser = parserFactory.getParser(rootChangeLogFile.absolutePath, resourceAccessor)
 		def rootChangeLog = parser.parse(rootChangeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
 
@@ -644,6 +713,63 @@ databaseChangeLog {
 		assertEquals FIRST_INCLUDED_CHANGE_SET, changeSets[0].id
 		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
 		assertEquals ROOT_CHANGE_SET, changeSets[2].id
+
+		// Check that the paths of the 2 included change sets are absolute.
+		assertTrue changeSets[0].filePath.startsWith("/")
+		assertTrue changeSets[1].filePath.startsWith("/")
+
+		def preconditions = rootChangeLog.preconditionContainer?.nestedPreconditions
+		assertNotNull preconditions
+		assertEquals 2, preconditions.size()
+		assertTrue preconditions[0] instanceof DBMSPrecondition
+		assertTrue preconditions[1] instanceof RunningAsPrecondition
+	}
+
+	/**
+	 * Try including all files in a directory.  For this test, we want 2 files
+	 * to make sure we include them both, and in the right order.  This test
+	 * makes sure that tokens don't affect relative paths.
+	 * <p>
+	 * Note: when other tests throw exceptions, this test may also fail because
+	 * of unclean directories.  Fix the other tests first.
+	 */
+	@Test
+	void includeAllWithValidTokenRelativeToWorkingDir() {
+		createIncludedChangeLogFiles()
+		def includedChangeLogPath = TMP_INCLUDE_DIR.path
+
+		def rootChangeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
+databaseChangeLog {
+  preConditions {
+    dbms(type: 'mysql')
+  }
+  property(name: 'includeDir', value: '${includedChangeLogPath}')
+  includeAll(path: '\${includeDir}')
+  changeSet(author: 'ssaliman', id: '${ROOT_CHANGE_SET}') {
+    addColumn(tableName: 'monkey') {
+      column(name: 'emotion', type: 'varchar(50)')
+    }
+  }
+}
+""")
+
+		assertTrue includedChangeLogPath.startsWith(FILE_PATH)
+		def parser = parserFactory.getParser(rootChangeLogFile.absolutePath, resourceAccessor)
+		def rootChangeLog = parser.parse(rootChangeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
+
+		assertNotNull rootChangeLog
+		def changeSets = rootChangeLog.changeSets
+		assertNotNull changeSets
+		assertEquals 3, changeSets.size()
+		assertEquals FIRST_INCLUDED_CHANGE_SET, changeSets[0].id
+		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
+		assertEquals ROOT_CHANGE_SET, changeSets[2].id
+
+		// Check that the paths of the 2 included change sets are absolute.
+		// The 3rd change set did not come from the "includeAll", so it won't
+		// necessarily be relative.
+		assertTrue changeSets[0].filePath.startsWith(FILE_PATH)
+		assertTrue changeSets[1].filePath.startsWith(FILE_PATH)
 
 		def preconditions = rootChangeLog.preconditionContainer?.nestedPreconditions
 		assertNotNull preconditions
@@ -694,10 +820,13 @@ databaseChangeLog {
 	}
 
 	/**
-	 * Try including all files in a directory relative to the changelog.
+	 * Try including all files in a directory relative to the changelog.  This
+	 * is not the same as the "relative" tests before, which tested including
+	 * changelogs that were relative to the working directory.  This test is
+	 * looking at the relativeToChangeLogFile parameter.
 	 */
 	@Test
-	void includeAllRelative() {
+	void includeAllRelativeToChangeLog() {
 		createIncludedChangeLogFiles()
 		// For relative tests, the resource accessor needs to point to the
 		// correct changelog directory.
@@ -718,6 +847,50 @@ databaseChangeLog {
 
 		def parser = parserFactory.getParser(rootChangeLogFile.absolutePath, resourceAccessor)
 		def rootChangeLog = parser.parse(rootChangeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
+
+		assertNotNull rootChangeLog
+		def changeSets = rootChangeLog.changeSets
+		assertNotNull changeSets
+		assertEquals 3, changeSets.size()
+		assertEquals FIRST_INCLUDED_CHANGE_SET, changeSets[0].id
+		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
+		assertEquals ROOT_CHANGE_SET, changeSets[2].id
+
+		def preconditions = rootChangeLog.preconditionContainer?.nestedPreconditions
+		assertNotNull preconditions
+		assertEquals 2, preconditions.size()
+		assertTrue preconditions[0] instanceof DBMSPrecondition
+		assertTrue preconditions[1] instanceof RunningAsPrecondition
+	}
+
+	/**
+	 * Try including all files in a directory relative to the changelog.  This
+	 * is not the same as the "relative" tests before, which tested including
+	 * changelogs that were relative to the working directory.  This test is
+	 * looking at the relativeToChangeLogFile parameter.
+	 */
+	@Ignore("relativeToChangelogFile is known to have issues in Liquibase itself, so we'll work on this later.")
+	void includeAllRelativeToChangeLogRelative() {
+		createIncludedChangeLogFiles()
+		// For relative tests, the resource accessor needs to point to the
+		// correct changelog directory.
+		resourceAccessor = new FileSystemResourceAccessor(baseDirectory: TMP_CHANGELOG_DIR.path)
+		def rootChangeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
+databaseChangeLog {
+  preConditions {
+    dbms(type: 'mysql')
+  }
+  includeAll(path: 'include', relativeToChangelogFile: true)
+  changeSet(author: 'ssaliman', id: '${ROOT_CHANGE_SET}') {
+    addColumn(tableName: 'monkey') {
+      column(name: 'emotion', type: 'varchar(50)')
+    }
+  }
+}
+""")
+
+		def parser = parserFactory.getParser(rootChangeLogFile.path, resourceAccessor)
+		def rootChangeLog = parser.parse(rootChangeLogFile.path, new ChangeLogParameters(), resourceAccessor)
 
 		assertNotNull rootChangeLog
 		def changeSets = rootChangeLog.changeSets
