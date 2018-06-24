@@ -71,6 +71,7 @@ class ColumnDelegateTests {
 		assertNull delegate.columns[0].defaultValueBoolean
 		assertNull delegate.columns[0].defaultValueComputed
 		assertNull delegate.columns[0].defaultValueSequenceNext
+		assertNull delegate.columns[0].defaultValueConstraintName
 		assertNull delegate.columns[0].autoIncrement
 		assertNull delegate.columns[0].startWith
 		assertNull delegate.columns[0].incrementBy
@@ -112,6 +113,7 @@ class ColumnDelegateTests {
 		assertNull delegate.columns[0].defaultValueBoolean
 		assertNull delegate.columns[0].defaultValueComputed
 		assertNull delegate.columns[0].defaultValueSequenceNext
+		assertNull delegate.columns[0].defaultValueConstraintName
 		assertNull delegate.columns[0].autoIncrement
 		assertNull delegate.columns[0].startWith
 		assertNull delegate.columns[0].incrementBy
@@ -156,6 +158,7 @@ class ColumnDelegateTests {
 					defaultValueBoolean: false,
 					defaultValueComputed: new DatabaseFunction("defaultDatabaseValue"),
 					defaultValueSequenceNext: new SequenceNextValueFunction('defaultSequence'),
+					defaultValueConstraintName: 'defaultValueConstraint',
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
@@ -185,6 +188,7 @@ class ColumnDelegateTests {
 		assertFalse delegate.columns[0].defaultValueBoolean
 		assertEquals 'defaultDatabaseValue', delegate.columns[0].defaultValueComputed.value
 		assertEquals 'defaultSequence', delegate.columns[0].defaultValueSequenceNext.value
+		assertEquals 'defaultValueConstraint', delegate.columns[0].defaultValueConstraintName
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
@@ -295,6 +299,7 @@ class ColumnDelegateTests {
 					defaultValueBoolean: false,
 					defaultValueComputed: new DatabaseFunction("defaultDatabaseValue"),
 					defaultValueSequenceNext: new SequenceNextValueFunction('defaultSequence'),
+					defaultValueConstraintName: 'defaultValueConstraint',
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
@@ -327,6 +332,7 @@ class ColumnDelegateTests {
 		assertFalse delegate.columns[0].defaultValueBoolean
 		assertEquals 'defaultDatabaseValue', delegate.columns[0].defaultValueComputed.value
 		assertEquals 'defaultSequence', delegate.columns[0].defaultValueSequenceNext.value
+		assertEquals 'defaultValueConstraint', delegate.columns[0].defaultValueConstraintName
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
@@ -375,6 +381,7 @@ class ColumnDelegateTests {
 					defaultValueBoolean: false,
 					defaultValueComputed: new DatabaseFunction("defaultDatabaseValue"),
 					defaultValueSequenceNext: new SequenceNextValueFunction('defaultSequence'),
+					defaultValueConstraintName: 'defaultValueConstraint',
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
@@ -406,6 +413,7 @@ class ColumnDelegateTests {
 		assertFalse delegate.columns[0].defaultValueBoolean
 		assertEquals 'defaultDatabaseValue', delegate.columns[0].defaultValueComputed.value
 		assertEquals 'defaultSequence', delegate.columns[0].defaultValueSequenceNext.value
+		assertEquals 'defaultValueConstraint', delegate.columns[0].defaultValueConstraintName
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
@@ -472,7 +480,7 @@ class ColumnDelegateTests {
 	 */
 	@Test(expected = ChangeLogParseException)
 	void columnWithInvalidAttribute() {
-		def delegate = buildColumnDelegate(ColumnConfig.class) {
+		buildColumnDelegate(ColumnConfig.class) {
 			column(header: 'invalid')
 		}
 	}
