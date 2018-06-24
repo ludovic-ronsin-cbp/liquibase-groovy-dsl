@@ -180,6 +180,9 @@ databaseChangeLog()
 		assertTrue changeLog.changeSets[0].runInTransaction
 		assertNull changeLog.changeSets[0].failOnError
 		assertEquals "HALT", changeLog.changeSets[0].onValidationFail.toString()
+		assertNull changeLog.changeSets[0].created
+		assertNull changeLog.changeSets[0].runOrder
+		assertFalse changeLog.changeSets[0].ignore
 	}
 
 	/**
@@ -198,7 +201,10 @@ databaseChangeLog()
 					  runInTransaction: false,
 					  failOnError: true,
 					  onValidationFail: "MARK_RAN",
-					  objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS") {
+					  objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS",
+			          created: 'test_created',
+			          runOrder: 'last',
+			          ignore: true) {
 			  dropTable(tableName: 'monkey')
 			}
 		}
@@ -217,6 +223,9 @@ databaseChangeLog()
 		assertTrue changeLog.changeSets[0].failOnError
 		assertEquals "MARK_RAN", changeLog.changeSets[0].onValidationFail.toString()
 		assertEquals ObjectQuotingStrategy.QUOTE_ONLY_RESERVED_WORDS, changeLog.changeSets[0].objectQuotingStrategy
+		assertEquals 'test_created', changeLog.changeSets[0].created
+		assertEquals 'last', changeLog.changeSets[0].runOrder
+		assertTrue changeLog.changeSets[0].ignore
 	}
 
 	/**
@@ -237,7 +246,10 @@ databaseChangeLog()
 					runInTransaction: false,
 					failOnError: true,
 					onValidationFail: "MARK_RAN",
-					objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS") {
+					objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS",
+					created: 'test_created',
+					runOrder: 'first',
+					ignore: false) {
 				dropTable(tableName: 'monkey')
 			}
 		}
@@ -256,6 +268,9 @@ databaseChangeLog()
 		assertTrue changeLog.changeSets[0].failOnError
 		assertEquals "MARK_RAN", changeLog.changeSets[0].onValidationFail.toString()
 		assertEquals ObjectQuotingStrategy.QUOTE_ONLY_RESERVED_WORDS, changeLog.changeSets[0].objectQuotingStrategy
+		assertEquals 'test_created', changeLog.changeSets[0].created
+		assertEquals 'first', changeLog.changeSets[0].runOrder
+		assertFalse changeLog.changeSets[0].ignore
 	}
 
 	/**

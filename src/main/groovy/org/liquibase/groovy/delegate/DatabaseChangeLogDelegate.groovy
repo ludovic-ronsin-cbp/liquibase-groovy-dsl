@@ -76,7 +76,22 @@ class DatabaseChangeLogDelegate {
 			throw new ChangeLogParseException("Error: ChangeSet '${params.id}': the alwaysRun attribute of a changeSet has been removed.  Please use 'runAlways' instead.")
 		}
 
-		def unsupportedKeys = params.keySet() - ['id', 'author', 'dbms', 'runAlways', 'runOnChange', 'context', 'labels', 'runInTransaction', 'failOnError', 'onValidationFail', 'objectQuotingStrategy']
+		def unsupportedKeys = params.keySet() - [
+				'id',
+				'author',
+				'dbms',
+				'runAlways',
+				'runOnChange',
+				'context',
+				'labels',
+				'runInTransaction',
+				'failOnError',
+				'onValidationFail',
+				'objectQuotingStrategy',
+				'created',
+				'runOrder',
+				'ignore'
+		]
 		if (unsupportedKeys.size() > 0) {
 			throw new ChangeLogParseException("ChangeSet '${params.id}': ${unsupportedKeys.toArray()[0]} is not a supported ChangeSet attribute")
 		}
@@ -102,16 +117,28 @@ class DatabaseChangeLogDelegate {
 				objectQuotingStrategy,
 				databaseChangeLog)
 
-		if (params.containsKey('failOnError')) {
-			changeSet.failOnError = params.failOnError?.toBoolean()
+		if ( params.containsKey('failOnError') ) {
+			changeSet.failOnError = DelegateUtil.parseTruth(params.failOnError, false)
 		}
 
-		if (params.onValidationFail) {
+		if ( params.onValidationFail ) {
 			changeSet.onValidationFail = ChangeSet.ValidationFailOption.valueOf(params.onValidationFail)
 		}
 
-		if (params.labels) {
+		if ( params.labels ) {
 			changeSet.labels = new Labels(params.labels as String)
+		}
+
+		if ( params.created ) {
+			changeSet.created = params.created
+		}
+
+		if ( params.runOrder ) {
+			changeSet.runOrder = params.runOrder
+		}
+
+		if ( params.ignore ) {
+			changeSet.ignore = DelegateUtil.parseTruth(params.ignore, false)
 		}
 
 		def delegate = new ChangeSetDelegate(changeSet: changeSet,
