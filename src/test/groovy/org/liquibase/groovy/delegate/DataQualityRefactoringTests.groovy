@@ -544,7 +544,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					maxValue: 400,
 					ordered: true,
 					cacheSize: 10,
-					willCycle: true,
+					cycle: true,
 			)
 		}
 
@@ -561,7 +561,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 400G, changes[0].maxValue
 		assertTrue changes[0].ordered
 		assertEquals 10G, changes[0].cacheSize
-		assertTrue changes[0].willCycle
+		assertTrue changes[0].cycle
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

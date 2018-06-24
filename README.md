@@ -47,6 +47,9 @@ There are several breaking changes with this version of the DSL:
   of the few things handled by the DSL itself, so `filter` will still work even
   if you're using an older version of Liquibase.
 
+5. The `alterSequence` change used to have a `willCycle` attribute.  That 
+  attribute is now called `cycle`
+
 ###February 23, 2017
 Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
 See the CHANGELOG for more details.  Note that if you use this DSL via the 
@@ -189,64 +192,81 @@ sql { """
    automatically create indexes on primary keys and foreign keys, and others
    don't.  The idea is that you would have a change to create the primary key or
    foreign key, and another to create the index for it.  The index change would
-   use the ```associatedWith``` attribute to let Liquibase know that this index
+   use the `associatedWith` attribute to let Liquibase know that this index
    will already exist for some databases so that Liquibase can skip the change
    if we are in one of those databases.  The Liquibase authors do say it is
    experimental, so use at your own risk...
 * The `executeCommand` change has an undocumented `os` attribute.  The
   `os` attribute is a string with  a list of operating systems under which
-  the command should execute.  If present, the ```os.name``` system property
-  will be checked against this list, and the command will only run if the
-  operating system is in the list.
+  the command should execute.  If present, the `os.name` system property will
+  be checked against this list, and the command will only run if the operating
+  system is in the list.
 * The `column` element has some undocumented attributes that are pretty
   significant.  They include:
-    - `valueSequenceNext`, `valueSequenceCurrent`, and
-      `defaultValueSequenceNext`, which appear to link values for a column
-      to database sequences.
-
-    - A column can be set auto-number if it the ```autoIncrement``` attribute is
-      set to true, but did you know that you can also control the starting
-      number and the increment interval with the ```startWith``` and
-      ```incrementBy``` attributes?
-* The ```constraints``` element also has some hidden gems:
-    - Some databases automatically create indexes for primary keys. The
-      ```primaryKeyTablespace``` can be used to control the tablespace.
-    - A foreign key can be made by using the ```references``` attribute like
-      this: ```references: 'monkey(id)'```, It can also be done like this:
-      ```referencedTableName: 'monkey', referencedColumnNames: 'id'``` for those
-    who prefer to separate out the table from the column.
-    - There is also a ```checkConstraint``` attribute, that appears to be
-      useful for defining a check constraint, but I could not determine the
-      proper syntax for it yet.  For now, it may be best to stick to custom
-      ```sql``` changes to define check constraints.
-* The ```createSequence``` change has an ```cacheSize``` attribute that sets
-  how many numbers of the sequence will be fetched into memory for each query
-  that accesses the sequence.
+  - `valueSequenceNext`, `valueSequenceCurrent`, and
+    `defaultValueSequenceNext`, which appear to link values for a column
+    to database sequences.
+  - A column can be set auto-number if it the `autoIncrement` attribute is set
+    to true, but did you know that you can also control the starting number and
+    the increment interval with the `startWith` and `incrementBy` attributes?
+  - Since Liquibase 3.6, you can specify a `defaultValueConstraintName`.
+* The `constraints` element also has some hidden gems:
+  - Some databases automatically create indexes for primary keys. The
+    `primaryKeyTablespace` can be used to control the tablespace.
+  - A foreign key can be made by using the `references` attribute like
+    this: `references: 'monkey(id)'`, It can also be done like this:
+    `referencedTableName: 'monkey', referencedColumnNames: 'id'` for those
+    who prefer to separate out the table from the column. Since Liuquibase 3.5,
+    this second form also has `referencedTableCatalogName` and 
+    `referencedTableSchemaName` atrributes.
+  - There is also a `checkConstraint` attribute, that appears to be useful
+    for defining a check constraint, but I could not determine the
+    proper syntax for it yet.  For now, it may be best to stick to custom
+    `sql` changes to define check constraints.
+  - Since Liquibase 3.6, you can specify a name for a Not Null constraint with
+    the `notNullConstraintName` attribute.
+* The `createSequence` change has n `cacheSize` attribute that sets how many
+  numbers of the sequence will be fetched into memory for each query that
+  accesses the sequence.
 * The documentation for version 3.1.1 of Liquibase mentions the new
-  ```beforeColumn```, ```afterColumn```, and ```position``` attributes that you
-  can put on a ```column``` statement to control where a new column is placed in
-  an existing table.  What the 1.2 documentation leaves out is that these
-  attributes don't work :-)
+  `beforeColumn`, `afterColumn`, and `position` attributes that you can put on
+  a `column` statement to control where a new column is placed in an existing
+  table.  What the documentation leaves out is that these attributes don't
+  work :-)
 * Version 3.4.0 of Liquibase introduced two new attributes to the 
-  ```includeAll``` element of a databaseChangeLog, both of which are
-  undocumented.  The first one is the ```errorIfMissingOrEmpty``` attribute.
-  It defaults to ```true```, but if it is set to ```false```, Liquibase will
-  ignore errors caused by invalid or empty directories and move on.  The second
-  one is the ```resourceFilter``` attribute.  A resourceFilter is the name of a
-  class that implements ```liquibase.changelog.IncludeAllFilter``` interface, 
-  which allows developers to implement sophisticated logic to decide what files
-  from a directory should be included (in addition to the *.groovy filter that
-  the Groovy DSL imposes). 
-* Liquibase 3.4.0 added the undocumented ```forIndexCatalogName```,
-  ```forIndexSchemaName```, and ```forIndexName``` attributes to the 
-  ```addPrimaryKey``` and ```addUniqueConstraint``` changes.  These attributes
-  allow you to specify the index that will be used to implement the primary key
-   and unique constraint, respectively.
-* Liquibase 3.4.0 added the undocumented ```cacheSize``` and ```willCycle``` 
-  attributes to the ```alterSequence```  change. ```cacheSize``` sets how many 
-  numbers of the sequence will be fetched into memory for each query that 
-  accesses the sequence.  ```willCycle``` determines if the sequence should 
-  start over when it reaches its maximum value.
+  `includeAll` element of a databaseChangeLog, both of which are undocumented.
+  The first one is the `errorIfMissingOrEmpty` attribute.  It defaults to 
+  `true`, but if it is set to `false`, Liquibase will ignore errors caused by
+  invalid or empty directories and move on.  The second one is the 
+  `resourceFilter` attribute.  A resourceFilter is the name of a class that
+  implements `liquibase.changelog.IncludeAllFilter` interface, which allows 
+  developers to implement sophisticated logic to decide what files from a 
+  directory should be included (in addition to the .groovy extension filter
+  that the Groovy DSL imposes). 
+* Liquibase 3.5.0 renamed the `resourceFilter` of `includeAll` to just `filter`.
+  It also added `resourceComparator`, which lets you specify the name of a 
+  class that implements Comparator that will be used to determine how to sort
+  files.  The default is to just sort them by name.
+* Liquibase 3.4.0 added the undocumented `forIndexCatalogName`,
+  `forIndexSchemaName`, and `forIndexName` attributes to the `addPrimaryKey` 
+  and `addUniqueConstraint` changes.  These attributes allow you to specify the
+  index that will be used to implement the primary key and unique constraint, 
+  respectively.
+* Liquibase 3.4.0 added the undocumented `cacheSize` and `willCycle` attributes
+  to the `alterSequence`  change. `cacheSize` sets how many numbers of the 
+  sequence will be fetched into memory for each query that accesses the 
+  sequence.  `willCycle` determines if the sequence should start over when it
+  reaches its maximum value.
+* Liquibase 3.5.0 changed the `willCycle` attribute of `alterSequence` to be `cycle`.
+  It does the same thing, but it remains undocumented.
+* Liquibsase added the `context` attribute to the `include`, `includeAll`, and
+  `changeLog` elements.  They work the same as the context attribute of a 
+  change set.
+* Liquibase 3.5 added `runOrder` and `created` attributes to the `changeSet` 
+  element.  `runOrder` lets you specify that a change set should always be 
+  first or last.  I have no idea what `created` does.
+* Liquibase 3.6 added the `ignore` attribute to a change set, which seems to be
+  a way to ignore a change set.
 
 ## License
 This code is released under the Apache Public License 2.0, just like Liquibase 2.0.
