@@ -76,11 +76,14 @@ class ConstraintDelegateTests {
 		assertNotNull constraint
 		assertTrue constraint instanceof ConstraintsConfig
 		assertNull constraint.nullable
+		assertNull constraint.notNullConstraintName
 		assertNull constraint.primaryKey
 		assertNull constraint.primaryKeyName
 		assertNull constraint.primaryKeyTablespace
 		assertNull constraint.foreignKeyName
 		assertNull constraint.references
+		assertNull constraint.referencedTableCatalogName
+		assertNull constraint.referencedTableSchemaName
 		assertNull constraint.referencedTableName
 		assertNull constraint.referencedColumnNames
 		assertNull constraint.unique
@@ -115,11 +118,14 @@ class ConstraintDelegateTests {
 		def constraint = buildConstraint {
 			constraints(
 					nullable: true,
+					notNullConstraintName: 'myColumnNotNull',
 					primaryKey: true,
 					primaryKeyName: 'myPrimaryKey',
 					primaryKeyTablespace: 'myPrimaryTablespace',
 					foreignKeyName: 'fk_monkey',
 					references: 'monkey(id)',
+					referencedTableCatalogName: 'monkey_catalog',
+					referencedTableSchemaName: 'monkey_schema',
 					referencedTableName: 'monkey',
 					referencedColumnNames: 'id',
 					unique: true,
@@ -134,11 +140,14 @@ class ConstraintDelegateTests {
 		assertNotNull constraint
 		assertTrue constraint instanceof ConstraintsConfig
 		assertTrue constraint.nullable
+		assertEquals 'myColumnNotNull', constraint.notNullConstraintName
 		assertTrue constraint.primaryKey
 		assertEquals 'myPrimaryKey', constraint.primaryKeyName
 		assertEquals 'myPrimaryTablespace', constraint.primaryKeyTablespace
 		assertEquals 'fk_monkey', constraint.foreignKeyName
 		assertEquals 'monkey(id)', constraint.references
+		assertEquals 'monkey_catalog', constraint.referencedTableCatalogName
+		assertEquals 'monkey_schema', constraint.referencedTableSchemaName
 		assertEquals 'monkey', constraint.referencedTableName
 		assertEquals 'id', constraint.referencedColumnNames
 		assertTrue constraint.unique
