@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-databaseChangeLog(logicalFilePath: '.') {
+databaseChangeLog(logicalFilePath: '.', context: 'myContext') {
 
   changeSet(author: 'stevesaliman', id: 'change-set-001') {
-    
+
   }
 
 }

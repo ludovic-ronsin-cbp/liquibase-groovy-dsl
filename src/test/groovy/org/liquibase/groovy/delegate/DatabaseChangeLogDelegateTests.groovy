@@ -100,6 +100,7 @@ class DatabaseChangeLogDelegateTests {
 		assertNotNull "Parsed DatabaseChangeLog was null", changeLog
 		assertTrue "Parser result was not a DatabaseChangeLog", changeLog instanceof DatabaseChangeLog
 		assertEquals '.', changeLog.logicalFilePath
+		assertEquals "myContext", changeLog.contexts.toString()
 
 		def changeSets = changeLog.changeSets
 		assertEquals 1, changeSets.size()
@@ -155,7 +156,6 @@ databaseChangeLog()
 		assertEquals 'fail-message!!!1!!1one!', preconditions.onFailMessage
 		assertEquals 'error-message', preconditions.onErrorMessage
 	}
-
 
 	/**
 	 * Test creating a changeSet with no attributes. This verifies that we use

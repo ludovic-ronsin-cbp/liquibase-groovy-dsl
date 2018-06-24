@@ -18,6 +18,7 @@ package org.liquibase.groovy.delegate
 
 import liquibase.ContextExpression
 import liquibase.Labels
+import liquibase.change.Change
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.IncludeAllFilter
 import liquibase.database.ObjectQuotingStrategy
@@ -46,6 +47,13 @@ class DatabaseChangeLogDelegate {
 		// It doesn't make sense to expand expressions, since we haven't loaded
 		// properties yet.
 		params.each { key, value ->
+			// The context attribute needs a little work.  The value needs to
+			// be converted into an object, and the DatabaseChangelog has
+			// an attribute named "contexts"
+			if ( key.equals("context") ) {
+				key = "contexts"
+				value = new ContextExpression(value) {}
+			}
 			databaseChangeLog[key] = value
 		}
 	}
@@ -214,6 +222,79 @@ class DatabaseChangeLogDelegate {
 	}
 
 	/**
+	 * Process nested preConditions elements in a database change log.
+	 * @param params the attributes of the preConditions
+	 * @param closure the closure containing nested elements of a precondition.
+	 */
+	void preConditions(Map params = [:], Closure closure) {
+		databaseChangeLog.preconditions = PreconditionDelegate.buildPreconditionContainer(databaseChangeLog, '<none>', params, closure)
+	}
+
+	/**
+	 * Process nested property elements in a database change log.
+	 * @param params the attributes of the property.
+	 */
+	void property(Map params = [:]) {
+		// Start by validating input
+		def unsupportedKeys = params.keySet() - ['name', 'value', 'context', 'labels', 'dbms', 'global', 'file']
+		if (unsupportedKeys.size() > 0) {
+			throw new ChangeLogParseException("DababaseChangeLog: ${unsupportedKeys.toArray()[0]} is not a supported property attribute")
+		}
+
+		ContextExpression context = null
+		if (params['context'] != null) {
+			context = new ContextExpression(params['context'])
+		}
+		Labels labels = null
+		if (params['labels'] != null) {
+			labels = new Labels(params['labels'])
+		}
+		def dbms = params['dbms'] ?: null
+		// The default for global was true prior to Liquibase 3.4
+		def global = DelegateUtil.parseTruth(params.global, true)
+
+		def changeLogParameters = databaseChangeLog.changeLogParameters
+
+		if (!params['file']) {
+			changeLogParameters.set(params['name'], params['value'], context as ContextExpression, labels as Labels, dbms, global, databaseChangeLog)
+		} else {
+			String propFile = params['file']
+			def props = new Properties()
+			def propertiesStreams = resourceAccessor.getResourcesAsStream(propFile)
+			if (!propertiesStreams) {
+				throw new ChangeLogParseException("Unable to load file with properties: ${params['file']}")
+			} else {
+				propertiesStreams.each { stream ->
+					props.load(stream)
+					props.each { k, v ->
+						changeLogParameters.set(k, v, context as ContextExpression, labels as Labels, dbms, global, databaseChangeLog)
+					}
+				}
+			}
+		}
+	}
+
+	def propertyMissing(String name) {
+		def changeLogParameters = databaseChangeLog.changeLogParameters
+		if (changeLogParameters.hasValue(name)) {
+			return changeLogParameters.getValue(name)
+		} else {
+			throw new MissingPropertyException(name, this.class)
+		}
+	}
+
+	/**
+	 * Groovy calls methodMissing when it can't find a matching method to call.
+	 * We use it to tell the user which changeSet had the invalid element.
+	 * @param name the name of the method Groovy wanted to call.
+	 * @param args the original arguments to that method.
+	 */
+	def methodMissing(String name, args) {
+		throw new ChangeLogParseException("DatabaseChangeLog: '${name}' is not a valid element of a DatabaseChangeLog")
+	}
+
+
+	/**
 	 * Helper class to load all the changesets in an included directory.  This
 	 * method is basically a copy of the Liquibase 3.6.1
 	 * {@code DatabaseChangeLog.includeAll} method, except that it fixes the
@@ -296,77 +377,5 @@ class DatabaseChangeLogDelegate {
 				return o1. compareTo(o2);
 			}
 		};
-	}
-
-	/**
-	 * Process nested preConditions elements in a database change log.
-	 * @param params the attributes of the preConditions
-	 * @param closure the closure containing nested elements of a precondition.
-	 */
-	void preConditions(Map params = [:], Closure closure) {
-		databaseChangeLog.preconditions = PreconditionDelegate.buildPreconditionContainer(databaseChangeLog, '<none>', params, closure)
-	}
-
-	/**
-	 * Process nested property elements in a database change log.
-	 * @param params the attributes of the property.
-	 */
-	void property(Map params = [:]) {
-		// Start by validating input
-		def unsupportedKeys = params.keySet() - ['name', 'value', 'context', 'labels', 'dbms', 'global', 'file']
-		if (unsupportedKeys.size() > 0) {
-			throw new ChangeLogParseException("DababaseChangeLog: ${unsupportedKeys.toArray()[0]} is not a supported property attribute")
-		}
-
-		ContextExpression context = null
-		if (params['context'] != null) {
-			context = new ContextExpression(params['context'])
-		}
-		Labels labels = null
-		if (params['labels'] != null) {
-			labels = new Labels(params['labels'])
-		}
-		def dbms = params['dbms'] ?: null
-		// The default for global was true prior to Liquibase 3.4
-		def global = DelegateUtil.parseTruth(params.global, true)
-
-		def changeLogParameters = databaseChangeLog.changeLogParameters
-
-		if (!params['file']) {
-			changeLogParameters.set(params['name'], params['value'], context as ContextExpression, labels as Labels, dbms, global, databaseChangeLog)
-		} else {
-			String propFile = params['file']
-			def props = new Properties()
-			def propertiesStreams = resourceAccessor.getResourcesAsStream(propFile)
-			if (!propertiesStreams) {
-				throw new ChangeLogParseException("Unable to load file with properties: ${params['file']}")
-			} else {
-				propertiesStreams.each { stream ->
-					props.load(stream)
-					props.each { k, v ->
-						changeLogParameters.set(k, v, context as ContextExpression, labels as Labels, dbms, global, databaseChangeLog)
-					}
-				}
-			}
-		}
-	}
-
-	def propertyMissing(String name) {
-		def changeLogParameters = databaseChangeLog.changeLogParameters
-		if (changeLogParameters.hasValue(name)) {
-			return changeLogParameters.getValue(name)
-		} else {
-			throw new MissingPropertyException(name, this.class)
-		}
-	}
-
-	/**
-	 * Groovy calls methodMissing when it can't find a matching method to call.
-	 * We use it to tell the user which changeSet had the invalid element.
-	 * @param name the name of the method Groovy wanted to call.
-	 * @param args the original arguments to that method.
-	 */
-	def methodMissing(String name, args) {
-		throw new ChangeLogParseException("DatabaseChangeLog: '${name}' is not a valid element of a DatabaseChangeLog")
 	}
 }
