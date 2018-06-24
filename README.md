@@ -10,24 +10,42 @@ Saliman.
 
 ## News
 
-### June 3, 2018
-Release 2.0.0 of the Groovy DSL decouples the DSL from any particular version
-of Liquibase, making it easier for users to take advantage of new releases of
-Liquibase as soon as they are released.  Note that the DSL itself is compiled 
-and tested against a specific version of Liquibase (currently 3.4.2), so YMMV
-with regard to newer releases.  **NOTE** The Groovy DSL no longer includes 
-Liquibase itself as a dependency.  Users must make sure the desired version of
-Liquibase is on the classpath.
+### June 23, 2018
+Work is continuing on Release 2.0.0 of the Groovy DSL, which will fully support
+Liquibase 3.6.1.  This release will decouple the DSL from any particular 
+version of Liquibase, making it easier for users to take advantage of new
+releases of Liquibase as soon as they are released.  Note that the DSL itself
+is tested against a specific version of Liquibase to ensure complete 
+compatibility with a specific version, so YMMV with regard to newer releases.
 
-*Note* There was a bug introduced in version 1.2.2 of the parser regarding 
-filenames and the `includeAll` change that was fixed in the 2.0.0 release.
-Prior to version 1.2.2, filenames for included changesets were relative to the
-working directory whenever the directory passed to `includeAll` was relative to
-the working directory.  In version 1.2.2, all filenames became absolute paths,
-which is not what we want.  This has been fixed in version 2.0.0, but if you
-have changesets that were run with version 1.2.2 of the parser, version 2.0.0
-will try to run them again, which means you'll probably need to fix some of the
-paths in the DATABASECHANGELOG table.
+*This release has breaking changes*
+
+There are several breaking changes with this version of the DSL:
+1. The Groovy DSL no longer includes Liquibase itself as a dependency.  Users
+  must make sure the desired version of Liquibase is on the classpath.
+
+2. There was a bug introduced in version 1.2.2 of the DSL regarding filenames
+  and the `includeAll` change. Version 1.2.2 was incorrectly converting all
+  changeset filenames to absolute paths, a bug that was fixed in version 2.0.0.
+  If you are updating from version 1.2.1 or earlier, this change should not 
+  effect you, but if you've run changes with version 1.2.2, you will need to fix
+  some or all of yhe paths in the DATABASECHANGELOG table before running the 
+  2.0.0 parser.  Failing to do this wil result in Liquibase trying to run the 
+  changes again.
+
+3. Liquibase made a change to the checksum logic in version 3.6.0.  According
+  to the Liquibase documentation, Liquibase will just fix the checksums of each
+  change when you run the first update command, but it won't detect changes to
+  any changes that were marked with the `runOnChange`.  If you have any changes
+  that use `runOnChange`, you should run an update once with your old version,
+  then run it again with the new version to fix the checksums.
+
+4. Liquibase changed the `resourceFilter` attribute of the `includeAll` element
+  to just `filter`.  Since the Groovy DSL is being built for Luquibase 3.6.x, 
+  it will throw an error if it finds the old `resourceFilter` attribute, so you
+  will need to convert any effected change sets.  Note that `includeAll` is one
+  of the few things handled by the DSL itself, so `filter` will still work even
+  if you're using an older version of Liquibase.
 
 ###February 23, 2017
 Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
@@ -59,31 +77,43 @@ documented separately from the Liquibase XML format.  We will, however let you
 know about the minor differences or enhancements to the XML format, and help out
 with a couple of the gaping holes in Liquibase's documentation of the XML.
 
+Note that wile the Groovy DSL fully supports using absolute paths for 
+changelogs, we strongly reccommend using relative paths instead.  When Liquibase
+sees an absolute path for a changelog, all changes included by that changelog
+will also have absolute path names, even if the `include` or `includeAll`
+element used the `relativeToChangeLog` attribute.  This will cause problems in
+multi-developer environments because the diffence in the users' directories will
+cause Liquibase to think that the changes are new, and it will try to run them
+again.
+
 ##### Deprecated and Unsupported Items
-* Liquibase has a ```whereParam``` element for changes like the ```update``` 
-  change.  It isn't documented in the Liquibase documentation, and I don't see 
-  any benefits of using it over the simpler ```where``` element, so it has been
-  left out of the Groovy DSL.
-* In the Liquibase XML, you can set a ```sql``` attribute in a ```sqlFile```
-  change, but that doesn't make a lot sense, so this has been disabled in the
-  Groovy DSL.
-* The documentation mentions a ```referencesUniqueColumn``` attribute of the
-  ```addForeignKeyConstraint``` change, but what it doesn't tell you is that it
-  is ignored.  In the code, Liquibase has marked this item as being deprecated,
+* Liquibase has a `whereParam` element for changes like the `update` change.
+  It isn't documented in the Liquibase documentation, and I don't see any
+  benefits of using it over the simpler `where` element, so it has been left
+  out of the Groovy DSL.
+* In the Liquibase XML, you can set a `sql` attribute in a `sqlFile` change,
+  but that doesn't make a lot sense, so this has been disabled in the Groovy
+  DSL.
+* The documentation mentions a `referencesUniqueColumn` attribute of the
+  `addForeignKeyConstraint` change, but what it doesn't tell you is that it is
+  ignored.  In the code, Liquibase has marked this item as being deprecated,
   so we've deprecated it as well, and we let you know about it.
 * If you were using the DSL prior to version 1.0.0, a changeSet could have an
-  ```alwaysRun``` property.  This is inconsistent with Liquibase and has been
-  replaced in 1.0.0 with ```runAlways```
-* Prior to 1.0.0, the DSL allowed a ```path``` attribute in an ```include```.
-  This is no longer allowed.  ```includeAll``` should be used instead.
-* Prior to 1.0.0, the DSL allowed ```createStoredProcedure``` changes.  This has
-  been replaced with ```createProcedure```.
+  `alwaysRun` property.  This is inconsistent with Liquibase and has been
+  replaced in 1.0.0 with `runAlways`
+* Prior to 1.0.0, the DSL allowed a `path` attribute in an `include`.  This is
+  no longer allowed.  `includeAll` should be used instead.
+* Prior to 1.0.0, the DSL allowed `createStoredProcedure` changes.  This has
+  been replaced with `createProcedure`.
 * Prior to 1.0.0, the DSL allowed a File object to be passed as an attribute to
-  ```loadData``` and ```loadUpdateData``` changes.  This is no longer supported,
-  the path to the file should be used instead.
+  `loadData` and `loadUpdateData` changes.  This is no longer supported, the
+  path to the file should be used instead.
 * Prior to 1.0.0, the DSL allowed constraint attributes to be set as methods
   in a constraint closure.  This is inconsistent with the rest of the DSL and
   has been removed.
+* Prior to 2.0.0, the DSL used the `resourceFilter` attribute of the 
+  `includeAll` element to filter the changelogs included in an directory.  This
+  has been changed to `filter` to remain consistent with Liquibase itself.
 
 ##### Additions to the XML format:
 * In general, boolean attributes can be specified as either strings or booleans.
@@ -195,8 +225,8 @@ sql { """
 * The documentation for version 3.1.1 of Liquibase mentions the new
   ```beforeColumn```, ```afterColumn```, and ```position``` attributes that you
   can put on a ```column``` statement to control where a new column is placed in
-  an existing table.  What 1.2the documentation leaves out is that these attributes
-  don't work :-)
+  an existing table.  What the 1.2 documentation leaves out is that these
+  attributes don't work :-)
 * Version 3.4.0 of Liquibase introduced two new attributes to the 
   ```includeAll``` element of a databaseChangeLog, both of which are
   undocumented.  The first one is the ```errorIfMissingOrEmpty``` attribute.
