@@ -129,6 +129,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 		def args = changes[0].args
 		assertNotNull args
 		assertEquals 0, args.size()
+		assertNull changes[0].timeout
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -153,6 +154,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 		def args = changes[0].args
 		assertNotNull args
 		assertEquals 0, args.size()
+		assertNull changes[0].timeout
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -165,7 +167,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 	void executeCommandWithNoArgs() {
 		buildChangeSet {
 			executeCommand(executable: "awk '/monkey/ { count++ } END { print count }'",
-					os: 'Mac OS X, Linux')
+					os: 'Mac OS X, Linux', timeout: '10s')
 		}
 
 		assertEquals 0, changeSet.rollback.changes.size()
@@ -181,6 +183,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 		def args = changes[0].args
 		assertNotNull args
 		assertEquals 0, args.size()
+		assertEquals '10s', changes[0].timeout
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -214,6 +217,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 		assertTrue args.every { arg -> arg instanceof String }
 		assertEquals '/monkey/ { count++ } END { print count }', args[0]
 		assertEquals '-f database.log', args[1]
+		assertNull changes[0].timeout
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -226,7 +230,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 	@Test
 	void executeCommandWithStringArgs() {
 		buildChangeSet {
-			executeCommand(executable: "awk", os: 'Mac OS X, Linux') {
+			executeCommand(executable: "awk", os: 'Mac OS X, Linux', timeout: '10s') {
 				arg('/monkey/ { count++ } END { print count }')
 				arg('-f database.log')
 			}
@@ -248,6 +252,7 @@ class CustomRefactoringTests extends ChangeSetTests {
 		assertTrue args.every { arg -> arg instanceof String }
 		assertEquals '/monkey/ { count++ } END { print count }', args[0]
 		assertEquals '-f database.log', args[1]
+		assertEquals '10s', changes[0].timeout
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

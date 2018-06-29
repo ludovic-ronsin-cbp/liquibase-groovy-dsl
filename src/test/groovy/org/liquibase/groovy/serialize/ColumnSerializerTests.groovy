@@ -61,10 +61,10 @@ class ColumnSerializerTests extends SerializerTests {
 
   @Test
   void buildSimpleDateColumn() {
-    def now = "2010-11-02T07:52:04.000"
-    def then = "2010-11-28T22:09:43.000"
-    def sqlNow = parseSqlTimestamp(now)
-    def sqlThen = parseSqlTimestamp(then)
+    def now = "2010-11-02T07:52:04"
+    def then = "2010-11-28T22:09:43"
+    def sqlNow = parseSqlTimestamp("${now}.000")
+    def sqlThen = parseSqlTimestamp("${then}.000")
 
     def columnConfig = new ColumnConfig()
     columnConfig.name = 'column-name'

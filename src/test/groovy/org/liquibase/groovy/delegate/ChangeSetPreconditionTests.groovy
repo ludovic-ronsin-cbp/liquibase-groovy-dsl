@@ -44,7 +44,6 @@ class ChangeSetPreconditionTests extends ChangeSetTests {
 		assertEquals 1, changes.size()
 		def preconditions = changeSet.preconditions?.nestedPreconditions
 		assertNotNull preconditions
-		assertNoOutput()
 	}
 }
 

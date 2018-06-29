@@ -10,13 +10,16 @@ Saliman.
 
 ## News
 
-### June 23, 2018
-Work is continuing on Release 2.0.0 of the Groovy DSL, which will fully support
+### June 28, 2018
+Work is continuing on Release 2.0.0 of the Groovy DSL, which now fully support
 Liquibase 3.6.1.  This release will decouple the DSL from any particular 
 version of Liquibase, making it easier for users to take advantage of new
 releases of Liquibase as soon as they are released.  Note that the DSL itself
 is tested against a specific version of Liquibase to ensure complete 
 compatibility with a specific version, so YMMV with regard to newer releases.
+
+The latest SNAPSHOT release has been tested against all the valid elements and
+attributes of Liquibase 3.6.1
 
 *This release has breaking changes*
 
@@ -267,6 +270,28 @@ sql { """
   first or last.  I have no idea what `created` does.
 * Liquibase 3.6 added the `ignore` attribute to a change set, which seems to be
   a way to ignore a change set.
+* Liquibase 3.6 added `validate` and `clustered` to the `addUniqueConstraint`
+  change.  `validate` tells the database to validate the constraint when it is
+  first created, and `clustered` tells the database to use a clustered index.
+* Liquibase 3.6 added `defaultValueConstraintName` to the `addDefaultValue` 
+  change to give the constraint being created a name.
+* Liquiabse 3.5 added `commentLineStartsWith` to the `loadData` change.  By
+  default, Liquibase treats lines in the loaded file that start with a `#` to be
+  comments.  `commentLineStartsWith` lets you change that.
+* Liquibase 3.6 added `usePreparedStatements` to the `loadData` change.  When
+  true, it tells Liquibase to use prepared statements in the insterts it 
+  generates.
+* Liquibase 3.6 added `validate` to the `addForeignKeyConstraint` change to
+  tell the database whether or not to validate a new constraint when it is made.
+* Liquibase 3.6 added another way to create a view with the `createView` change.
+  Previously, the SQL to create the view was in the closure of the `createView`
+  element.  Now you can specify a file with the SQL using the new `path`,
+  `encoding`, and `relativeToChangelogFile` attributes.  I have no idea what
+  happens if you specify both a path to a file and a closure with SQL.
+* Liquibase 3.6 added a `timeout` to the `executeCommand` change.  It lets you
+  specify a command timeout in seconds, minutes, or hours.  For example, to 
+  set a 2 minute timeout, you'd use `2m` as the value of the `timeout` 
+  attribute.
 
 ## License
 This code is released under the Apache Public License 2.0, just like Liquibase 2.0.

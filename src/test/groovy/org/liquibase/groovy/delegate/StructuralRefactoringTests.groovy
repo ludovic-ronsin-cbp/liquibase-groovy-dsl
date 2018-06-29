@@ -489,8 +489,12 @@ END;"""
 		assertNull changes[0].catalogName
 		assertNull changes[0].schemaName
 		assertNull changes[0].viewName
+		assertNull changes[0].remarks
 		assertNull changes[0].replaceIfExists
 		assertNull changes[0].fullDefinition
+		assertNull changes[0].path
+		assertNull changes[0].encoding
+		assertNull changes[0].relativeToChangelogFile
 		assertNull changes[0].selectQuery
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
@@ -502,14 +506,19 @@ END;"""
 	 * query, we don't need to test for sql by itself.
 	 */
 	@Test
-	void createViewFull() {
+	void createViewFullClosure() {
 		buildChangeSet {
 			createView(
 					catalogName: 'catalog',
 					schemaName: 'schema',
 					viewName: 'monkey_view',
+					remarks: 'monkey see, monkey do',
 					replaceIfExists: true,
-					fullDefinition: false) {
+					fullDefinition: false,
+					path: 'monkey_view.sql',
+					encoding: 'UTF-8',
+					relativeToChangelogFile: false
+			) {
 				"SELECT * FROM monkey WHERE state='angry'"
 			}
 		}
@@ -522,9 +531,52 @@ END;"""
 		assertEquals 'catalog', changes[0].catalogName
 		assertEquals 'schema', changes[0].schemaName
 		assertEquals 'monkey_view', changes[0].viewName
+		assertEquals 'monkey see, monkey do', changes[0].remarks
 		assertTrue changes[0].replaceIfExists
 		assertFalse changes[0].fullDefinition
+		assertEquals 'monkey_view.sql', changes[0].path
+		assertEquals 'UTF-8', changes[0].encoding
+		assertFalse changes[0].relativeToChangelogFile
 		assertEquals "SELECT * FROM monkey WHERE state='angry'", changes[0].selectQuery
+		assertNotNull changes[0].resourceAccessor
+		assertNoOutput()
+	}
+
+	/**
+	 * Test parsing a createView change with all supported attributes, but no
+	 * closure, as would happen when there is no path given.
+	 */
+	@Test
+	void createViewFullNoClosure() {
+		buildChangeSet {
+			createView(
+					catalogName: 'catalog',
+					schemaName: 'schema',
+					viewName: 'monkey_view',
+					remarks: 'monkey see, monkey do',
+					replaceIfExists: false,
+					fullDefinition: false,
+					path: 'monkey_view.sql',
+					encoding: 'UTF-8',
+					relativeToChangelogFile: true
+			)
+		}
+
+		assertEquals 0, changeSet.rollback.changes.size()
+		def changes = changeSet.changes
+		assertNotNull changes
+		assertEquals 1, changes.size()
+		assertTrue changes[0] instanceof CreateViewChange
+		assertEquals 'catalog', changes[0].catalogName
+		assertEquals 'schema', changes[0].schemaName
+		assertEquals 'monkey_view', changes[0].viewName
+		assertEquals 'monkey see, monkey do', changes[0].remarks
+		assertFalse changes[0].replaceIfExists
+		assertFalse changes[0].fullDefinition
+		assertEquals 'monkey_view.sql', changes[0].path
+		assertEquals 'UTF-8', changes[0].encoding
+		assertTrue changes[0].relativeToChangelogFile
+		assertNull "SELECT * FROM monkey WHERE state='angry'", changes[0].selectQuery
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

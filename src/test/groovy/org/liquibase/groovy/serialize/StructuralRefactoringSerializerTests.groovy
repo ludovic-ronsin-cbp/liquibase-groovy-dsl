@@ -156,7 +156,7 @@ createTable(remarks: 'angry', schemaName: 'schema', tableName: 'monkey', tablesp
 
 
   @Test
-  void createView() {
+  void createViewWithSql() {
     def change = [
       schemaName: 'schema',
       viewName: 'monkey_view',
@@ -169,6 +169,22 @@ createTable(remarks: 'angry', schemaName: 'schema', tableName: 'monkey', tablesp
 createView(replaceIfExists: true, schemaName: 'schema', viewName: 'monkey_view') {
   "SELECT * FROM monkey WHERE state='angry'"
 }"""
+    assertEquals expectedText, serializedText
+  }
+
+  @Test
+  void createViewNoSql() {
+    def change = [
+      schemaName: 'schema',
+      viewName: 'monkey_view',
+      replaceIfExists: true,
+      remarks: 'monkeys!',
+      path: 'monkey_view.sql'
+    ] as CreateViewChange
+
+    def serializedText = serializer.serialize(change, true)
+    def expectedText = """\
+createView(path: 'monkey_view.sql', remarks: 'monkeys!', replaceIfExists: true, schemaName: 'schema', viewName: 'monkey_view')"""
     assertEquals expectedText, serializedText
   }
 }

@@ -89,6 +89,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 					initiallyDeferred: false,
 					onDelete: 'RESTRICT',
 					onUpdate: 'CASCADE',
+					validate: false,
 					invalidAttribute: 'invalid'
 			)
 		}
@@ -122,6 +123,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].initiallyDeferred
 		assertNull changes[0].onDelete
 		assertNull changes[0].onUpdate
+		assertNull changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -147,7 +149,9 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 					deferrable: true,
 					initiallyDeferred: false,
 					onDelete: 'RESTRICT',
-					onUpdate: 'CASCADE'
+					onUpdate: 'CASCADE',
+					validate: false
+
 			)
 		}
 
@@ -169,12 +173,13 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertFalse changes[0].initiallyDeferred
 		assertEquals 'RESTRICT', changes[0].onDelete
 		assertEquals 'CASCADE', changes[0].onUpdate
+		assertFalse changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
 
 	/**
-	 * Liquibase has deprecated, though still documented, attribute
+	 * Liquibase has a deprecated, though still documented, attribute
 	 * {@code referencedUniqueColumn}, which is currently ignored by Liquibase,
 	 * so let's make sure we get a deprecation warning for it.  This test also
 	 * validates proper handling of the SET DEFAULT and SET NULL cascade types.
@@ -196,7 +201,8 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 					deferrable: false,
 					initiallyDeferred: true,
 					onDelete: 'SET DEFAULT',
-					onUpdate: 'SET NULL'
+					onUpdate: 'SET NULL',
+					validate: false
 			)
 		}
 
@@ -218,6 +224,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertTrue changes[0].initiallyDeferred
 		assertEquals 'SET DEFAULT', changes[0].onDelete // set by deleteCascade: true
 		assertEquals 'SET NULL', changes[0].onUpdate
+		assertFalse changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertPrinted("addForeignKeyConstraint's referencesUniqueColumn parameter has been deprecated")
 	}
@@ -226,7 +233,8 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 	 * Liquibase has deprecated, though still documented, attribute
 	 * {@code referencedUniqueColumn}, which is currently ignored by Liquibase,
 	 * so let's make sure we get a deprecation warning for it.  This test also
-	 * validates proper handling of the SET DEFAULT and SET NULL cascade types.
+	 * validates proper handling of the SET DEFAULT and SET NULL cascade types,
+	 * as well as the validate attribute.
 	 */
 	@Test
 	void addForeignKeyConstraintWithWithNoActionType() {
@@ -242,9 +250,10 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 					referencedTableName: 'emotions',
 					referencedColumnNames: 'id',
 					deferrable: false,
-					initiallyDeferred: true,
+					initiallyDeferred: false,
 					onDelete: 'NO ACTION',
-					onUpdate: 'NO ACTION'
+					onUpdate: 'NO ACTION',
+					validate: true
 			)
 		}
 
@@ -263,9 +272,10 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertEquals 'emotions', changes[0].referencedTableName
 		assertEquals 'id', changes[0].referencedColumnNames
 		assertFalse changes[0].deferrable
-		assertTrue changes[0].initiallyDeferred
+		assertFalse changes[0].initiallyDeferred
 		assertEquals 'NO ACTION', changes[0].onDelete
 		assertEquals 'NO ACTION', changes[0].onUpdate
+		assertTrue changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -290,7 +300,8 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 			        deferrable: false,
 			        initiallyDeferred: true,
 			        deleteCascade: true,
-			        onUpdate: 'NO ACTION'
+			        onUpdate: 'NO ACTION',
+					validate: false
 			)
 		}
 
@@ -312,6 +323,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertTrue changes[0].initiallyDeferred
 		assertEquals 'CASCADE', changes[0].onDelete // set by deleteCascade: true
 		assertEquals 'NO ACTION', changes[0].onUpdate
+		assertFalse changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

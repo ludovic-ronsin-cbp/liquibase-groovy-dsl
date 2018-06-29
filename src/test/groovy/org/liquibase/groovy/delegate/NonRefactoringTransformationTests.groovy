@@ -276,9 +276,11 @@ class NonRefactoringTransformationTests extends ChangeSetTests {
 		assertNull changes[0].tableName
 		assertNull changes[0].file
 		assertNull changes[0].relativeToChangelogFile
+		assertNull changes[0].usePreparedStatements
 		assertNull changes[0].encoding
 		assertEquals ",", changes[0].separator
 		assertEquals '"', changes[0].quotchar
+		assertEquals "#", changes[0].commentLineStartsWith
 		assertNotNull changes[0].resourceAccessor
 		def columns = changes[0].columns
 		assertNotNull columns
@@ -290,21 +292,25 @@ class NonRefactoringTransformationTests extends ChangeSetTests {
 	 * Test parsing a loadDataChange with all supported attributes and a few
 	 * columns.  We're not too concerned with the column contents, just make
 	 * sure we get them, including the extra attributes that are supported for
-	 * columns in a loadData change.  For this test, we want a separator and
-	 * quotchar that is different from the Liquibase defaults, so we'll go with
-	 * semi-colon separated and single quoted
+	 * columns in a loadData change.  For this test, we want a separator,
+	 * quotchar, and commentLineStartsWith that are different from the
+	 * Liquibase defaults, so we'll go with semi-colon separated, single quoted,
+	 * and double dash comments.  For this test we'll only set the first of
+	 * the two booleans to true.
 	 */
 	@Test
-	void loadDataFull() {
+	void loadDataFullRelative() {
 		buildChangeSet {
 			loadData(catalogName: 'catalog',
 					 schemaName: 'schema',
 					 tableName: 'monkey',
 					 file: 'data.csv',
 					 relativeToChangelogFile: true,
+					 usePreparedStatements: false,
 					 encoding: 'UTF-8',
 					 separator: ';',
-					 quotchar: "'") {
+					 quotchar: "'",
+					 commentLineStartsWith: "--") {
 				column(name: 'id', index: 1, header: 'id_header')
 				column(name: 'emotion', index: 2, header: 'emotion_header')
 			}
@@ -320,9 +326,68 @@ class NonRefactoringTransformationTests extends ChangeSetTests {
 		assertEquals 'monkey', changes[0].tableName
 		assertEquals 'data.csv', changes[0].file
 		assertTrue changes[0].relativeToChangelogFile
+		assertFalse changes[0].usePreparedStatements
 		assertEquals 'UTF-8', changes[0].encoding
 		assertEquals ';', changes[0].separator
 		assertEquals "'", changes[0].quotchar
+		assertEquals "--", changes[0].commentLineStartsWith
+		assertNotNull changes[0].resourceAccessor
+		def columns = changes[0].columns
+		assertNotNull columns
+		assertTrue columns.every { column -> column instanceof LoadDataColumnConfig }
+		assertEquals 2, columns.size()
+		assertEquals 'id', columns[0].name
+		assertEquals 1, columns[0].index
+		assertEquals 'id_header', columns[0].header
+		assertEquals 'emotion', columns[1].name
+		assertEquals 2, columns[1].index
+		assertEquals 'emotion_header', columns[1].header
+		assertNoOutput()
+	}
+
+	/**
+	 * Test parsing a loadDataChange with all supported attributes and a few
+	 * columns.  We're not too concerned with the column contents, just make
+	 * sure we get them, including the extra attributes that are supported for
+	 * columns in a loadData change.  For this test, we want a separator,
+	 * quotchar, and commentLineStartsWith that are different from the
+	 * Liquibase defaults, so we'll go with semi-colon separated, single quoted,
+	 * and double dash comments.  For this test we'll only set the second of
+	 * the two booleans to true.
+	 */
+	@Test
+	void loadDataFullPrepared() {
+		buildChangeSet {
+			loadData(catalogName: 'catalog',
+					 schemaName: 'schema',
+					 tableName: 'monkey',
+					 file: 'data.csv',
+					 relativeToChangelogFile: false,
+					 usePreparedStatements: true,
+					 encoding: 'UTF-8',
+					 separator: ';',
+					 quotchar: "'",
+					 commentLineStartsWith: "--") {
+				column(name: 'id', index: 1, header: 'id_header')
+				column(name: 'emotion', index: 2, header: 'emotion_header')
+			}
+		}
+
+		assertEquals 0, changeSet.rollback.changes.size()
+		def changes = changeSet.changes
+		assertNotNull changes
+		assertEquals 1, changes.size()
+		assertTrue changes[0] instanceof LoadDataChange
+		assertEquals 'catalog', changes[0].catalogName
+		assertEquals 'schema', changes[0].schemaName
+		assertEquals 'monkey', changes[0].tableName
+		assertEquals 'data.csv', changes[0].file
+		assertFalse changes[0].relativeToChangelogFile
+		assertTrue changes[0].usePreparedStatements
+		assertEquals 'UTF-8', changes[0].encoding
+		assertEquals ';', changes[0].separator
+		assertEquals "'", changes[0].quotchar
+		assertEquals "--", changes[0].commentLineStartsWith
 		assertNotNull changes[0].resourceAccessor
 		def columns = changes[0].columns
 		assertNotNull columns

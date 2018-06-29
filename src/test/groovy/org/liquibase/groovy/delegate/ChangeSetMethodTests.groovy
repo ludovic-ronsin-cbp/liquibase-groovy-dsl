@@ -46,7 +46,7 @@ class ChangeSetMethodTests extends ChangeSetTests {
 	}
 
 	/**
-	 * Test the validChecksuum functionality.  This test needs some explanation.
+	 * Test the validChecksum functionality.  This test needs some explanation.
 	 * Liquibase's {@code isChecksumValid()} method compares the change set's
 	 * current checksum to the hash given to the method. If they don't match, it
 	 * will check the current checksum against checksums that are stored with the
@@ -70,7 +70,6 @@ class ChangeSetMethodTests extends ChangeSetTests {
 			validCheckSum goodChecksum
 		}
 		assertTrue "Arbitrary checksum should be valid after being added", changeSet.isCheckSumValid(liquibaseChecksum)
-		assertNoOutput()
 	}
 
 	/**

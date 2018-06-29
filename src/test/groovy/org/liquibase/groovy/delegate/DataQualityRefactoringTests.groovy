@@ -159,6 +159,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].defaultValueDate
 		assertNull changes[0].defaultValueNumeric
 		assertNull changes[0].defaultValueSequenceNext
+		assertNull changes[0].defaultValueConstraintName
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -183,7 +184,8 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					defaultValueComputed: 'max',
 					defaultValueDate: '20101109T130400Z',
 					defaultValueNumeric: '2.718281828459045',
-					defaultValueSequenceNext: 'sequence'
+					defaultValueSequenceNext: 'sequence',
+					defaultValueConstraintName: 'monkey_strength_default'
 			)
 		}
 
@@ -203,6 +205,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals '20101109T130400Z', changes[0].defaultValueDate
 		assertEquals '2.718281828459045', changes[0].defaultValueNumeric
 		assertEquals 'sequence', changes[0].defaultValueSequenceNext.value
+		assertEquals 'monkey_strength_default', changes[0].defaultValueConstraintName
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -361,13 +364,15 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].forIndexCatalogName
 		assertNull changes[0].forIndexSchemaName
 		assertNull changes[0].forIndexName
+		assertNull changes[0].validate
+		assertNull changes[0].clustered
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
 
 	/**
 	 * Test parsing an addUniqueConstraint change when we have all supported
-	 * options.  There are 3 booleans here, so to isolate the attributes, this
+	 * options.  There are 5 booleans here, so to isolate the attributes, this
 	 * test will only set deferrable to true.
 	 */
 	@Test
@@ -385,7 +390,9 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					disabled: false,
 					forIndexCatalogName: 'index_catalog',
 					forIndexSchemaName: 'index_schema',
-					forIndexName: 'unique_constraint_idx'
+					forIndexName: 'unique_constraint_idx',
+					validate: false,
+					clustered: false
 			)
 		}
 
@@ -406,13 +413,15 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 'index_catalog', changes[0].forIndexCatalogName
 		assertEquals 'index_schema', changes[0].forIndexSchemaName
 		assertEquals 'unique_constraint_idx', changes[0].forIndexName
+		assertFalse changes[0].validate
+		assertFalse changes[0].clustered
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
 
 	/**
 	 * Test parsing an addUniqueConstraint change when we have all supported
-	 * options.  There are 3 booleans here, so to isolate the attributes, this
+	 * options.  There are 5 booleans here, so to isolate the attributes, this
 	 * test will only set initiallyDeferred to true.
 	 */
 	@Test
@@ -430,7 +439,9 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					disabled: false,
 					forIndexCatalogName: 'index_catalog',
 					forIndexSchemaName: 'index_schema',
-					forIndexName: 'unique_constraint_idx'
+					forIndexName: 'unique_constraint_idx',
+					validate: false,
+					clustered: false
 			)
 		}
 
@@ -451,13 +462,15 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 'index_catalog', changes[0].forIndexCatalogName
 		assertEquals 'index_schema', changes[0].forIndexSchemaName
 		assertEquals 'unique_constraint_idx', changes[0].forIndexName
+		assertFalse changes[0].validate
+		assertFalse changes[0].clustered
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
 
 	/**
 	 * Test parsing an addUniqueConstraint change when we have all supported
-	 * options.  There are 3 booleans here, so to isolate the attributes, this
+	 * options.  There are 5 booleans here, so to isolate the attributes, this
 	 * test will only set deferrable to true.
 	 */
 	@Test
@@ -475,7 +488,9 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					disabled: true,
 					forIndexCatalogName: 'index_catalog',
 					forIndexSchemaName: 'index_schema',
-					forIndexName: 'unique_constraint_idx'
+					forIndexName: 'unique_constraint_idx',
+					validate: false,
+					clustered: false
 			)
 		}
 
@@ -496,6 +511,106 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 'index_catalog', changes[0].forIndexCatalogName
 		assertEquals 'index_schema', changes[0].forIndexSchemaName
 		assertEquals 'unique_constraint_idx', changes[0].forIndexName
+		assertFalse changes[0].validate
+		assertFalse changes[0].clustered
+		assertNotNull changes[0].resourceAccessor
+		assertNoOutput()
+	}
+
+	/**
+	 * Test parsing an addUniqueConstraint change when we have all supported
+	 * options.  There are 5 booleans here, so to isolate the attributes, this
+	 * test will only set validate to true.
+	 */
+	@Test
+	void addUniqueConstraintFullValidate() {
+		buildChangeSet {
+			addUniqueConstraint(
+					tablespace: 'tablespace',
+					catalogName: 'catalog',
+					schemaName: 'schema',
+					tableName: 'monkey',
+					columnNames: 'species, emotion',
+					constraintName: 'unique_constraint',
+					deferrable: false,
+					initiallyDeferred: false,
+					disabled: false,
+					forIndexCatalogName: 'index_catalog',
+					forIndexSchemaName: 'index_schema',
+					forIndexName: 'unique_constraint_idx',
+					validate: true,
+					clustered: false
+			)
+		}
+
+		assertEquals 0, changeSet.rollback.changes.size()
+		def changes = changeSet.changes
+		assertNotNull changes
+		assertEquals 1, changes.size()
+		assertTrue changes[0] instanceof AddUniqueConstraintChange
+		assertEquals 'tablespace', changes[0].tablespace
+		assertEquals 'catalog', changes[0].catalogName
+		assertEquals 'schema', changes[0].schemaName
+		assertEquals 'monkey', changes[0].tableName
+		assertEquals 'species, emotion', changes[0].columnNames
+		assertEquals 'unique_constraint', changes[0].constraintName
+		assertFalse changes[0].deferrable
+		assertFalse changes[0].initiallyDeferred
+		assertFalse changes[0].disabled
+		assertEquals 'index_catalog', changes[0].forIndexCatalogName
+		assertEquals 'index_schema', changes[0].forIndexSchemaName
+		assertEquals 'unique_constraint_idx', changes[0].forIndexName
+		assertTrue changes[0].validate
+		assertFalse changes[0].clustered
+		assertNotNull changes[0].resourceAccessor
+		assertNoOutput()
+	}
+
+	/**
+	 * Test parsing an addUniqueConstraint change when we have all supported
+	 * options.  There are 5 booleans here, so to isolate the attributes, this
+	 * test will only set clustered to true.
+	 */
+	@Test
+	void addUniqueConstraintFullClustered() {
+		buildChangeSet {
+			addUniqueConstraint(
+					tablespace: 'tablespace',
+					catalogName: 'catalog',
+					schemaName: 'schema',
+					tableName: 'monkey',
+					columnNames: 'species, emotion',
+					constraintName: 'unique_constraint',
+					deferrable: false,
+					initiallyDeferred: false,
+					disabled: false,
+					forIndexCatalogName: 'index_catalog',
+					forIndexSchemaName: 'index_schema',
+					forIndexName: 'unique_constraint_idx',
+					validate: false,
+					clustered: true
+			)
+		}
+
+		assertEquals 0, changeSet.rollback.changes.size()
+		def changes = changeSet.changes
+		assertNotNull changes
+		assertEquals 1, changes.size()
+		assertTrue changes[0] instanceof AddUniqueConstraintChange
+		assertEquals 'tablespace', changes[0].tablespace
+		assertEquals 'catalog', changes[0].catalogName
+		assertEquals 'schema', changes[0].schemaName
+		assertEquals 'monkey', changes[0].tableName
+		assertEquals 'species, emotion', changes[0].columnNames
+		assertEquals 'unique_constraint', changes[0].constraintName
+		assertFalse changes[0].deferrable
+		assertFalse changes[0].initiallyDeferred
+		assertFalse changes[0].disabled
+		assertEquals 'index_catalog', changes[0].forIndexCatalogName
+		assertEquals 'index_schema', changes[0].forIndexSchemaName
+		assertEquals 'unique_constraint_idx', changes[0].forIndexName
+		assertFalse changes[0].validate
+		assertTrue changes[0].clustered
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -523,7 +638,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].maxValue
 		assertNull changes[0].ordered // it is an Object and can be null.
 		assertNull changes[0].cacheSize
-		assertNull changes[0].willCycle
+		assertNull changes[0].cycle
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

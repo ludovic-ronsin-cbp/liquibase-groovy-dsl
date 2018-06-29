@@ -265,6 +265,11 @@ class ChangeSetDelegate {
 		addChange(change)
 	}
 
+	void createView(Map params) {
+		def change = makeChangeFromMap('createView', CreateViewChange, params)
+		addChange(change)
+	}
+
 	void createView(Map params, Closure closure) {
 		def change = makeChangeFromMap('createView', CreateViewChange, params)
 		change.selectQuery = DelegateUtil.expandExpressions(closure.call(), databaseChangeLog)
