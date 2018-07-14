@@ -5,23 +5,25 @@
 A pluggable parser for [Liquibase](http://liquibase.org) that allows the
 creation of changelogs in a Groovy DSL, rather than hurtful XML. If this DSL
 isn't reason enough to adopt Liquibase, then there is no hope for you.  This
-project was started once upon a time by Tim Berglund, and is currently maintained by Steve
-Saliman.
+project was started once upon a time by Tim Berglund, and is currently
+maintained by Steve Saliman.
 
 ## News
 
-### June 28, 2018
-Work is continuing on Release 2.0.0 of the Groovy DSL, which now fully support
-Liquibase 3.6.1.  This release will decouple the DSL from any particular 
-version of Liquibase, making it easier for users to take advantage of new
-releases of Liquibase as soon as they are released.  Note that the DSL itself
-is tested against a specific version of Liquibase to ensure complete 
-compatibility with a specific version, so YMMV with regard to newer releases.
+### July 14, 2018
+We're proud to announce the release of version 2.0.0 of the Groovy DSL, which
+now fully supports Liquibase 3.6.1.  This release will decouple the DSL from
+any particular version of Liquibase, making it easier for users to take
+advantage of new releases of Liquibase as soon as they are released.  Note that
+the DSL itself is tested against a specific version of Liquibase to ensure 
+complete compatibility with a specific version, so YMMV with regard to newer
+releases.
 
-The latest SNAPSHOT release has been tested against all the valid elements and
-attributes of Liquibase 3.6.1
+Release 2.0.0 has been tested against all the valid elements and attributes of
+Liquibase 3.6.1
 
-*This release has breaking changes*
+**This release has breaking changes,** so make sure to read all the information
+in this section before upgrading.
 
 There are several breaking changes with this version of the DSL:
 1. The Groovy DSL no longer includes Liquibase itself as a dependency.  Users
@@ -32,7 +34,7 @@ There are several breaking changes with this version of the DSL:
   changeset filenames to absolute paths, a bug that was fixed in version 2.0.0.
   If you are updating from version 1.2.1 or earlier, this change should not 
   effect you, but if you've run changes with version 1.2.2, you will need to fix
-  some or all of yhe paths in the DATABASECHANGELOG table before running the 
+  some or all of the paths in the DATABASECHANGELOG table before running the 
   2.0.0 parser.  Failing to do this wil result in Liquibase trying to run the 
   changes again.
 
@@ -44,11 +46,11 @@ There are several breaking changes with this version of the DSL:
   then run it again with the new version to fix the checksums.
 
 4. Liquibase changed the `resourceFilter` attribute of the `includeAll` element
-  to just `filter`.  Since the Groovy DSL is being built for Luquibase 3.6.x, 
-  it will throw an error if it finds the old `resourceFilter` attribute, so you
-  will need to convert any effected change sets.  Note that `includeAll` is one
-  of the few things handled by the DSL itself, so `filter` will still work even
-  if you're using an older version of Liquibase.
+  to just `filter`.  Since the 2.0.0 version of the Groovy DSL was built for
+  Liquibase 3.6.x, it will throw an error if it finds the old `resourceFilter`
+  attribute, so you will need to convert any effected change sets.  Note that
+  `includeAll` is one of the few things handled by the DSL itself, so `filter`
+  will still work even if you're using an older version of Liquibase.
 
 5. The `alterSequence` change used to have a `willCycle` attribute.  That 
   attribute is now called `cycle`
@@ -66,11 +68,10 @@ project into the Liquibase organization will help keep all things Liquibase
 together in one place.  This will help promote Liquibase adoption by making it
 easier for more people to use, and it will help people stay up to date with the
 latest releases.  As part of that move, the artifact name has changed from 
-`net.saliman:groovy-liquibase-dsl` to
-`org.liquibase:liquibase-groovy-dsl` to be consistent with the rest of the
-Liquibase artifacts.  A special thank you to Nathan Voxland for his help and 
-support in bringing the Liquibase project and the Groovy DSL together into one 
-home.
+`net.saliman:groovy-liquibase-dsl` to `org.liquibase:liquibase-groovy-dsl` to 
+be consistent with the rest of the Liquibase artifacts.  A special thank you to
+Nathan Voxland for his help and support in bringing the Liquibase project and 
+the Groovy DSL together into one home.
  
 ## Usage
 Simply include this project's jar file in your class path, along with a version
@@ -84,13 +85,13 @@ know about the minor differences or enhancements to the XML format, and help out
 with a couple of the gaping holes in Liquibase's documentation of the XML.
 
 Note that wile the Groovy DSL fully supports using absolute paths for 
-changelogs, we strongly reccommend using relative paths instead.  When Liquibase
+changelogs, we strongly recommend using relative paths instead.  When Liquibase
 sees an absolute path for a changelog, all changes included by that changelog
 will also have absolute path names, even if the `include` or `includeAll`
 element used the `relativeToChangeLog` attribute.  This will cause problems in
-multi-developer environments because the diffence in the users' directories will
-cause Liquibase to think that the changes are new, and it will try to run them
-again.
+multi-developer environments because the difference in the users' directories
+will cause Liquibase to think that the changes are new, and it will try to run
+them again.
 
 ##### Deprecated and Unsupported Items
 * Liquibase has a `whereParam` element for changes like the `update` change.
@@ -219,9 +220,9 @@ sql { """
   - A foreign key can be made by using the `references` attribute like
     this: `references: 'monkey(id)'`, It can also be done like this:
     `referencedTableName: 'monkey', referencedColumnNames: 'id'` for those
-    who prefer to separate out the table from the column. Since Liuquibase 3.5,
+    who prefer to separate out the table from the column. Since Liquibase 3.5,
     this second form also has `referencedTableCatalogName` and 
-    `referencedTableSchemaName` atrributes.
+    `referencedTableSchemaName` attributes.
   - There is also a `checkConstraint` attribute, that appears to be useful
     for defining a check constraint, but I could not determine the
     proper syntax for it yet.  For now, it may be best to stick to custom
@@ -262,7 +263,7 @@ sql { """
   reaches its maximum value.
 * Liquibase 3.5.0 changed the `willCycle` attribute of `alterSequence` to be `cycle`.
   It does the same thing, but it remains undocumented.
-* Liquibsase added the `context` attribute to the `include`, `includeAll`, and
+* Liquibase added the `context` attribute to the `include`, `includeAll`, and
   `changeLog` elements.  They work the same as the context attribute of a 
   change set.
 * Liquibase 3.5 added `runOrder` and `created` attributes to the `changeSet` 
@@ -275,11 +276,11 @@ sql { """
   first created, and `clustered` tells the database to use a clustered index.
 * Liquibase 3.6 added `defaultValueConstraintName` to the `addDefaultValue` 
   change to give the constraint being created a name.
-* Liquiabse 3.5 added `commentLineStartsWith` to the `loadData` change.  By
+* Liquibase 3.5 added `commentLineStartsWith` to the `loadData` change.  By
   default, Liquibase treats lines in the loaded file that start with a `#` to be
   comments.  `commentLineStartsWith` lets you change that.
 * Liquibase 3.6 added `usePreparedStatements` to the `loadData` change.  When
-  true, it tells Liquibase to use prepared statements in the insterts it 
+  true, it tells Liquibase to use prepared statements in the inserts it 
   generates.
 * Liquibase 3.6 added `validate` to the `addForeignKeyConstraint` change to
   tell the database whether or not to validate a new constraint when it is made.
