@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2017 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2018 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.junit.Before
 class PreconditionTests {
 
   @Before
-  void setupDatabase() { 
+  void setupDatabase() {
     def createDatabase = this.class.classLoader.findResource('sql/CreateDefaultDB.sql')
     println createDatabase
   }
