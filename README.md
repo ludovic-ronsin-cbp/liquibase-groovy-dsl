@@ -10,6 +10,10 @@ maintained by Steve Saliman.
 
 ## News
 
+### September 3, 2018
+Release 2.0.1 is a minor release that removes the CVE-2016-6814 vulnerability 
+by updating the Groovy dependency.
+
 ### July 14, 2018
 We're proud to announce the release of version 2.0.0 of the Groovy DSL, which
 now fully supports Liquibase 3.6.1.  This release will decouple the DSL from
