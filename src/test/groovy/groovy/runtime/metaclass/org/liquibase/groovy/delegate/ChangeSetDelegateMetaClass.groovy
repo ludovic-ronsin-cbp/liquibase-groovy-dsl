@@ -15,14 +15,10 @@
  */
 package groovy.runtime.metaclass.org.liquibase.groovy.delegate
 
-import groovy.lang.ExpandoMetaClass
-import groovy.lang.MetaClassRegistry
 
 import org.codehaus.groovy.runtime.metaclass.ClosureMetaMethod.AnonymousMetaMethod
-
 import org.liquibase.groovy.change.CustomProgrammaticChangeWrapper
 import org.liquibase.groovy.custom.MyCustomSqlChange
-
 
 /**
  * This defines an ExpandoMetaClass on org.liquibase.groovy.delegate.ChangeSetDelegate

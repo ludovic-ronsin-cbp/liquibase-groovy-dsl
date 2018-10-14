@@ -249,6 +249,20 @@ ALTER TABLE monkey_table DROP COLUMN angry;"""
 	}
 
 	/**
+	 * Process a rollback with a closure that has an invalid method in it.
+	 */
+	@Test(expected = ChangeLogParseException)
+	void rollbackInvalidClosure()	{
+		buildChangeSet {
+			rollback {
+				noSuchMethod(tableName: 'monkey') {
+					column(name: 'emotion', value: 'angry')
+				}
+				"ALTER TABLE monkey_table DROP COLUMN angry;"
+			}
+		}
+	}
+	/**
 	 * Process a map based rollback that is missing the changeSetId.  Expect an
 	 * error.
 	 */
@@ -269,7 +283,6 @@ ALTER TABLE monkey_table DROP COLUMN angry;"""
 		}
 	}
 
-	// rollback map without path /filePath
 	/**
 	 * Process a map based rollback when we don't supply a file path.  In that
 	 * case, we should use the one in the databaseChangeLog.  This test needs to

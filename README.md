@@ -10,6 +10,11 @@ maintained by Steve Saliman.
 
 ## News
 
+### October 14, 2018
+Release 2.0.2 adds support for changes provided by extensions, with thanks to 
+Amanuel Nega (@amexboy).  This release will be pushed in the next few days after
+I look into another issue.
+
 ### September 3, 2018
 Release 2.0.1 is a minor release that removes the CVE-2016-6814 vulnerability 
 by updating the Groovy dependency.

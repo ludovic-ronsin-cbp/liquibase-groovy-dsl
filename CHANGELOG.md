@@ -1,3 +1,11 @@
+Changes for 2.0.2
+=================
+- Changed the way we load changes.  We now look for all changes in the Liquibase
+  registry instead of instantiating them directly.
+  
+- Added support for changes provided by extensions, with thanks to Amanuel Nega
+  (@amexboy) (Issue #33)
+  
 Changes for 2.0.1
 =================
 - Updated the version of Groovy to 2.4.12 to remove the CVE-2016-6814

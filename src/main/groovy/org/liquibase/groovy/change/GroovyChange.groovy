@@ -41,6 +41,6 @@ class GroovyChange extends AbstractChange {
 
   
   SqlStatement[] generateStatements(Database database) {
-    return new SqlStatement[0];  //To change body of implemented methods use File | Settings | File Templates.
+    return new SqlStatement[0]  //To change body of implemented methods use File | Settings | File Templates.
   }
 }

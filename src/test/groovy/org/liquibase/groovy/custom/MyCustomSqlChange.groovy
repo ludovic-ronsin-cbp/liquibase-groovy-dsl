@@ -37,11 +37,9 @@ class MyCustomSqlChange
   }
 
   void setUp() {
-    ;
   }
 
-  public void setFileOpener(ResourceAccessor resourceAccessor) {
-    ;
+  void setFileOpener(ResourceAccessor resourceAccessor) {
   }
 
   ValidationErrors validate(Database database) {

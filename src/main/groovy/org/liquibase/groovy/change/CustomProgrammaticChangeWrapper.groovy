@@ -31,8 +31,7 @@ import liquibase.statement.SqlStatement
  * 
  * @author Jason Clawson
  */
-class CustomProgrammaticChangeWrapper
-  extends AbstractChange {
+class CustomProgrammaticChangeWrapper extends AbstractChange {
 
   final CustomChange customChange
 
