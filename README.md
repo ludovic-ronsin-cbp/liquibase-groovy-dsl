@@ -64,7 +64,7 @@ There are several breaking changes with this version of the DSL:
 5. The `alterSequence` change used to have a `willCycle` attribute.  That 
   attribute is now called `cycle`
 
-###February 23, 2017
+### February 23, 2017
 Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
 See the CHANGELOG for more details.  Note that if you use this DSL via the 
 Gradle Liquibase plugin, you will need version 1.2.3 of that plugin NOT 1.2.2,
