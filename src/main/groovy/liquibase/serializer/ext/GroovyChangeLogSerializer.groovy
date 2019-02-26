@@ -187,7 +187,7 @@ ${renderedChildren}
 		} else if ( textBody ) {
 			serializedChange = """\
 ${serializedChange} {
-  "${textBody}"
+  ''' ${textBody} '''
 }"""
 		}
 
@@ -280,7 +280,7 @@ ${renderedChildren}
 		} else if ( textBody ) {
 			serializedChange = """\
 ${serializedChange} {
-  "${textBody}"
+  ''' ${textBody} '''
 }"""
 		}
 
@@ -322,12 +322,12 @@ ${serializedChange} {
 						break
 
 					case Timestamp:
-						propertyString = "'${isoFormat.format((Timestamp) propertyValue)}'"
+						propertyString = "'''${isoFormat.format((Timestamp) propertyValue)}'''"
 						break
 
 					default:
 						if ( propertyValue ) {
-							propertyString = "'${propertyValue.toString()}'"
+							propertyString = "'''${propertyValue.toString()}'''"
 						}
 						break
 				}
