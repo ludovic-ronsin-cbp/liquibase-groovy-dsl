@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.fail
 
 /**
  * One of three test classes for the {@link DatabaseChangeLogDelegate}.  The
@@ -212,8 +213,8 @@ databaseChangeLog {
 		// Let's make sure we started with an absolute filename, then check
 		// that the path of the included change set is absolute.  The change
 		// that came from the root changelog should still be relative.
-		assertTrue includedChangeLogFile.startsWith("/")
-		assertTrue changeSets[0].filePath.startsWith("/")
+		assertAbsolutePath includedChangeLogFile
+		assertAbsolutePath changeSets[0].filePath
 		assertTrue changeSets[1].filePath.startsWith(TMP_CHANGELOG_PATH)
 
 		// Take a look at the contexts.  The change that came in with the
@@ -340,8 +341,8 @@ databaseChangeLog {
 
 		// Check that the paths of the included change set is relative. The 2nd
 		// change set did not come from the "include", so it will be absolute.
-		assertTrue changeSets[0].filePath.startsWith("/")
-		assertTrue changeSets[1].filePath.startsWith("/")
+		assertAbsolutePath changeSets[0].filePath
+		assertAbsolutePath changeSets[1].filePath
 
 		verifyIncludedPreconditions(rootChangeLog.preconditionContainer?.nestedPreconditions)
 	}
@@ -503,6 +504,19 @@ databaseChangeLog {
 		assertTrue preconditions[1] instanceof PreconditionContainer
 		preconditions = preconditions[1].nestedPreconditions
 		assertTrue preconditions[0] instanceof RunningAsPrecondition
+	}
+
+	/**
+	 * Helper method to determine if a given path represents an absolute path.
+	 * If the given path is not an absolute path for the platform, this method
+	 * will fail the test.
+	 * @param path the path to check
+	 */
+	private def assertAbsolutePath(path) {
+		if ( !new File(path).isAbsolute() ) {
+			fail "'${path}' is not an absolute path"
+		}
+
 	}
 }
 

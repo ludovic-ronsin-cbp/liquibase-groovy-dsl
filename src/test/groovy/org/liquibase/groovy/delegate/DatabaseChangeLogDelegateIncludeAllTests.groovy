@@ -970,8 +970,9 @@ databaseChangeLog {
 
 	/**
 	 * Helper method to determine if a given path represents an absolute path.
-	 * @param path
-	 * @return
+	 * If the given path is not an absolute path for the platform, this method
+	 * will fail the test.
+	 * @param path the path to check
 	 */
 	private def assertAbsolutePath(path) {
 		if ( !new File(path).isAbsolute() ) {
