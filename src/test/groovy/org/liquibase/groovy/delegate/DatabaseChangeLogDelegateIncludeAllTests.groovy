@@ -18,28 +18,22 @@ package org.liquibase.groovy.delegate
 
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.DatabaseChangeLog
-import liquibase.database.ObjectQuotingStrategy
 import liquibase.exception.ChangeLogParseException
-import liquibase.parser.ChangeLogParser
 import liquibase.parser.ChangeLogParserFactory
 import liquibase.parser.ext.GroovyLiquibaseChangeLogParser
-import liquibase.precondition.Precondition
 import liquibase.precondition.core.DBMSPrecondition
 import liquibase.precondition.core.PreconditionContainer
 import liquibase.precondition.core.RunningAsPrecondition
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.resource.FileSystemResourceAccessor
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import java.lang.reflect.Field
-
 import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.fail
 
 /**
  * One of three test classes for the {@link DatabaseChangeLogDelegate}.  The
@@ -148,10 +142,10 @@ databaseChangeLog {
 
 		// Make sure we started with an absolute path, then make sure all 3
 		// change sets have absolute paths
-		assertTrue includedChangeLogDir.startsWith("/")
-		assertTrue changeSets[0].filePath.startsWith("/")
-		assertTrue changeSets[1].filePath.startsWith("/")
-		assertTrue changeSets[2].filePath.startsWith("/")
+		assertAbsolutePath includedChangeLogDir
+		assertAbsolutePath changeSets[0].filePath
+		assertAbsolutePath changeSets[1].filePath
+		assertAbsolutePath changeSets[2].filePath
 
 		verifyIncludedPreconditions rootChangeLog.preconditionContainer?.nestedPreconditions
 	}
@@ -199,9 +193,9 @@ databaseChangeLog {
 		// the paths of the included change sets.  The first two, which came
 		// from the included file should be are absolute.  The 3rd one, which
 		// came from the root changelog should be relative.
-		assertTrue includedChangeLogDir.startsWith("/")
-		assertTrue changeSets[0].filePath.startsWith("/")
-		assertTrue changeSets[1].filePath.startsWith("/")
+		assertAbsolutePath includedChangeLogDir
+		assertAbsolutePath changeSets[0].filePath
+		assertAbsolutePath changeSets[1].filePath
 		assertTrue changeSets[2].filePath.startsWith(TMP_CHANGELOG_PATH)
 
 		// Take a look at the contexts of the changes.  The first 2, came from
@@ -212,7 +206,6 @@ databaseChangeLog {
 		assertNull changeSets[2].changeLog.includeContexts
 
 		verifyIncludedPreconditions rootChangeLog.preconditionContainer?.nestedPreconditions
-
 	}
 
 	/**
@@ -302,9 +295,9 @@ databaseChangeLog {
 		assertEquals SECOND_INCLUDED_CHANGE_SET, changeSets[1].id
 		assertEquals ROOT_CHANGE_SET, changeSets[2].id
 
-		assertTrue changeSets[0].filePath.startsWith("/")
-		assertTrue changeSets[1].filePath.startsWith("/")
-		assertTrue changeSets[2].filePath.startsWith("/")
+		assertAbsolutePath changeSets[0].filePath
+		assertAbsolutePath changeSets[1].filePath
+		assertAbsolutePath changeSets[2].filePath
 
 		verifyIncludedPreconditions rootChangeLog.preconditionContainer?.nestedPreconditions
 	}
@@ -972,6 +965,18 @@ databaseChangeLog {
 		assertTrue preconditions[2] instanceof PreconditionContainer
 		nested = preconditions[2].nestedPreconditions
 		assertEquals 0, nested.size()
+
+	}
+
+	/**
+	 * Helper method to determine if a given path represents an absolute path.
+	 * @param path
+	 * @return
+	 */
+	private def assertAbsolutePath(path) {
+		if ( !new File(path).isAbsolute() ) {
+			fail "'${path}' is not an absolute path"
+		}
 
 	}
 }

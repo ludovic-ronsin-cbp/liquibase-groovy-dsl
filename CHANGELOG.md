@@ -1,3 +1,11 @@
+Changes for 2.0.3
+=================
+- Changed the way strings are serialized when we run 'generateChangeLog'.  
+  Instead of single quotes, we now use Groovy's triple quotes.  If a view or
+  table remarks use multi-line definitions, or contain quotes themselves, the
+  generated change logs will now work.  Thanks to Ethan Davidson (@ethanmdavidson)
+  for the contribution (Issue #39)
+   
 Changes for 2.0.2
 =================
 - Changed the way we load changes.  We now look for all changes in the Liquibase
