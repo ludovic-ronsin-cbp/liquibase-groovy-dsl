@@ -10,6 +10,11 @@ maintained by Steve Saliman.
 
 ## News
 
+### March 3, 2019
+Release 2.0.3 is a minor release that fixes some unit tests on Windows and
+changes the way text is represented in generated changelogs, with thanks to
+Ethan Davidson (@ethanmdavidson)
+
 ### October 14, 2018
 Release 2.0.2 adds support for changes provided by extensions, with thanks to 
 Amanuel Nega (@amexboy).  This release will be pushed in the next few days after

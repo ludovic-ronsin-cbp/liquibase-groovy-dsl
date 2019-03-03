@@ -3,8 +3,10 @@ Changes for 2.0.3
 - Changed the way strings are serialized when we run 'generateChangeLog'.  
   Instead of single quotes, we now use Groovy's triple quotes.  If a view or
   table remarks use multi-line definitions, or contain quotes themselves, the
-  generated change logs will now work.  Thanks to Ethan Davidson (@ethanmdavidson)
-  for the contribution (Issue #39)
+  generated change logs will now work.  Thanks to Ethan Davidson
+  (@ethanmdavidson) for the contribution (Issue #39)
+  
+- Unit tests now work on windows boxes (Issue #40).
    
 Changes for 2.0.2
 =================
