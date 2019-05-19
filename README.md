@@ -89,14 +89,24 @@ the Groovy DSL together into one home.
  
 ## Usage
 Simply include this project's jar file in your class path, along with a version
-of Liquibase, and Liquibase can parse elegant Groovy changelogs instead of ugly
-XML ones. The DSL syntax is intended to mirror the [Liquibase XML]
-(http://www.liquibase.org/documentation/databasechangelog.html) syntax directly,
-such that mapping elements and attributes from the Liquibase documentation to
-Groovy builder syntax will result in a valid changelog. Hence this DSL is not
-documented separately from the Liquibase XML format.  We will, however let you
-know about the minor differences or enhancements to the XML format, and help out
-with a couple of the gaping holes in Liquibase's documentation of the XML.
+of Liquibase, a version of Groovy, and your database driver, and Liquibase can
+parse elegant Groovy changelogs instead of ugly XML ones.
+
+If you are running Liquibase directly from the command line using the binary
+distribution of Liquibase, you would need to copy the liquibase-groovy-dsl,
+groovy-x.y.z and database driver jar files into the `lib` directory of the 
+Liquibase distribution.  If you are running Liquibase using a Gradle plugin, 
+Maven plugin, or Spring Boot, follow the documentation of the tool to add these
+artifacts to the classpath.  
+
+The DSL syntax is intended to mirror the
+[Liquibase XML](http://www.liquibase.org/documentation/databasechangelog.html)
+syntax directly, such that mapping elements and attributes from the Liquibase
+documentation to Groovy builder syntax will result in a valid changelog. Hence
+this DSL is not documented separately from the Liquibase XML format.  We will,
+however let you know about the minor differences or enhancements to the XML
+format, and help out with a couple of the gaping holes in Liquibase's
+documentation of the XML.
 
 Note that wile the Groovy DSL fully supports using absolute paths for 
 changelogs, we strongly recommend using relative paths instead.  When Liquibase
