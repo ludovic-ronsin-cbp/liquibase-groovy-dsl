@@ -97,7 +97,7 @@ databaseChangeLog(logicalFilePath: '') {
         constraints(nullable: false, primaryKey: true)
         constraints(unique: true, uniqueConstraintName: 'make_it_unique_yo')
         constraints(foreignKeyName: 'key_to_monkey', references: 'monkey_table')
-        constraints(deleteCascase: true)
+        constraints(deleteCascade: true)
         constraints(deferrable: true, initiallyDeferred: false)
       }
       
@@ -244,7 +244,7 @@ databaseChangeLog(logicalFilePath: '') {
                             referencedTableName: '', referencedTableSchemaName: '', referencedColumnNames: '',
                             deferrable: true,
                             initiallyDeferred: false,
-                            deleteCascase: true,
+                            deleteCascade: true,
                             onDelete: 'CASCADE|SET NULL|SET DEFAULT|RESTRICT|NO ACTION',
                             onUpdate: 'CASCADE|SET NULL|SET DEFAULT|RESTRICT|NO ACTION')
   }
