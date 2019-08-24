@@ -9,6 +9,19 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
+### August 20, 2019
+Liquiabse version 3.7.0 is out, but it has caused a couple of issues with the
+Groovy DSL.  If you use one of the following, you won't be able to upgrade 
+to Liquibase 3.7.0:
+- `include` or `includeAll` in a change log: Liquibase has changed method 
+  signatures of these methods.  I have a workaround for it that will be 
+  released in the next version of the DSL.
+- 4 new attributes have been added to constraints, but the Groovy DSL can't 
+  work with them because of how they were implemented.  I've submitted a pull
+  request that fixes the issue.
+  
+As soon as Liquibase 3.7.1 is released, I'll release a version of the Groovy
+DSL that supports it.  We apologize for the inconvenience.
 
 ### March 3, 2019
 Release 2.0.3 is a minor release that fixes some unit tests on Windows and
