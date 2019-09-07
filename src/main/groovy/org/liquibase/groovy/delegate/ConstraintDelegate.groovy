@@ -36,7 +36,9 @@ class ConstraintDelegate {
   def constraints(Map params = [:]) {
     params.each { key, value ->
       try {
-	      PatchedObjectUtil.setProperty(constraint, key, DelegateUtil.expandExpressions(value, databaseChangeLog))
+	      def x = DelegateUtil.expandExpressions(value, databaseChangeLog)
+	      def y = x.class
+	      PatchedObjectUtil.setProperty(constraint, key, x)
       } catch(RuntimeException e) {
 	      // Rethrow as an ChangeLogParseException with a more helpful message
 	      // than you'll get from the Liquibase helper.

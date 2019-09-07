@@ -353,6 +353,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].forIndexCatalogName
 		assertNull changes[0].forIndexSchemaName
 		assertNull changes[0].forIndexName
+		assertNull changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -373,7 +374,8 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 					clustered: true,
 					forIndexCatalogName: 'index_catalog',
 					forIndexSchemaName: 'index_schema',
-					forIndexName: 'pk_monkey_idx'
+					forIndexName: 'pk_monkey_idx',
+					validate: true
 			)
 		}
 
@@ -392,6 +394,7 @@ class ReferentialIntegrityRefactoringTests extends ChangeSetTests {
 		assertEquals 'index_catalog', changes[0].forIndexCatalogName
 		assertEquals 'index_schema', changes[0].forIndexSchemaName
 		assertEquals 'pk_monkey_idx', changes[0].forIndexName
+		assertTrue changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

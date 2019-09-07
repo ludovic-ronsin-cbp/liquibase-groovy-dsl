@@ -20,7 +20,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 // Release version that won't conflict with the bintray plugin
-def releaseVersion = '2.0.3'
+def releaseVersion = '2.1.0-SNAPSHOT'
 group = 'org.liquibase'
 archivesBaseName = 'liquibase-groovy-dsl'
 version = releaseVersion
@@ -53,8 +53,14 @@ dependencies {
   // tests, so we also need testCompile.
   // compileOnly 'org.liquibase:liquibase-core:3.4.2'
   // testCompile 'org.liquibase:liquibase-core:3.4.2'
-  compileOnly 'org.liquibase:liquibase-core:3.6.1'
-  testCompile 'org.liquibase:liquibase-core:3.6.1'
+//  compileOnly 'org.liquibase:liquibase-core:3.6.1'
+//  testCompile 'org.liquibase:liquibase-core:3.6.1'
+//  compileOnly 'org.liquibase:liquibase-core:3.7.0'
+//  testCompile 'org.liquibase:liquibase-core:3.7.0'
+//  compileOnly 'org.liquibase:liquibase-core:3.8.0'
+//  testCompile 'org.liquibase:liquibase-core:3.8.0'
+  compileOnly 'org.liquibase:liquibase-core:3.8.1-SNAPSHOT'
+  testCompile 'org.liquibase:liquibase-core:3.8.1-SNAPSHOT'
   testCompile 'junit:junit:4.12'
   testRuntime 'com.h2database:h2:1.4.185'
   testRuntime 'ch.qos.logback:logback-classic:1.2.3'

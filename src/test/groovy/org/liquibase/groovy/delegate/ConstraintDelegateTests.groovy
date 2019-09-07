@@ -92,6 +92,10 @@ class ConstraintDelegateTests {
 		assertNull constraint.deleteCascade
 		assertNull constraint.initiallyDeferred
 		assertNull constraint.deferrable
+		assertNull constraint.validateNullable
+		assertNull constraint.validateUnique
+		assertNull constraint.validatePrimaryKey
+		assertNull constraint.validateForeignKey
 
 		assertNoOutput()
 	}
@@ -133,7 +137,11 @@ class ConstraintDelegateTests {
 					checkConstraint: 'myCheckConstraint',
 					deleteCascade: true,
 					initiallyDeferred: true,
-					deferrable: true
+					deferrable: true,
+					validateNullable: true,
+					validateUnique: true,
+					validatePrimaryKey: true,
+					validateForeignKey: true
 			)
 		}
 
@@ -156,6 +164,10 @@ class ConstraintDelegateTests {
 		assertTrue constraint.deleteCascade
 		assertTrue constraint.initiallyDeferred
 		assertTrue constraint.deferrable
+		assertTrue constraint.validateNullable
+		assertTrue constraint.validateUnique
+		assertTrue constraint.validatePrimaryKey
+		assertTrue constraint.validateForeignKey
 
 		assertNoOutput()
 	}

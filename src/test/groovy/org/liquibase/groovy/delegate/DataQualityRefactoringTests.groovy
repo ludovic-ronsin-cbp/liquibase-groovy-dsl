@@ -300,6 +300,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].columnName
 		assertNull changes[0].defaultNullValue
 		assertNull changes[0].columnDataType
+		assertNull changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -317,7 +318,8 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					tableName: 'monkey',
 					columnName: 'emotion',
 					defaultNullValue: 'angry',
-					columnDataType: 'varchar(75)'
+					columnDataType: 'varchar(75)',
+					validate: true
 			)
 		}
 
@@ -333,6 +335,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 'emotion', changes[0].columnName
 		assertEquals 'angry', changes[0].defaultNullValue
 		assertEquals 'varchar(75)', changes[0].columnDataType
+		assertTrue changes[0].validate
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}

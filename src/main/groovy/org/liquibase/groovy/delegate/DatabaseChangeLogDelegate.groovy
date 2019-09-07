@@ -17,12 +17,13 @@
 package org.liquibase.groovy.delegate
 
 import liquibase.ContextExpression
+import liquibase.LabelExpression
 import liquibase.Labels
-import liquibase.change.Change
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.IncludeAllFilter
 import liquibase.database.ObjectQuotingStrategy
 import liquibase.exception.ChangeLogParseException
+import liquibase.resource.ResourceAccessor
 
 /**
  * This class is the delegate for the {@code databaseChangeLog} element.  It
@@ -34,10 +35,20 @@ class DatabaseChangeLogDelegate {
 	def databaseChangeLog
 	def params
 	def resourceAccessor
+	def liquibaseVersion370Plus = false
 
 
 	DatabaseChangeLogDelegate(databaseChangeLog) {
 		this([:], databaseChangeLog)
+		// Liquiabse 3.7.0 introduced breaking changes in the "include" and
+		// "includeAll" methods, so we're using this nasty little hack to
+		// determine which version we're dealing with.  We'll see if the
+		// database change log we've been given responds to the newer method.
+		if ( databaseChangeLog.metaClass.respondsTo(databaseChangeLog, "include",
+				String, boolean, ResourceAccessor, ContextExpression,
+				LabelExpression, Boolean, boolean )) {
+			liquibaseVersion370Plus = true;
+		}
 	}
 
 
@@ -156,8 +167,13 @@ class DatabaseChangeLogDelegate {
 	 * @param params
 	 */
 	void include(Map params = [:]) {
-		// validate parameters.
-		def unsupportedKeys = params.keySet() - ['file', 'relativeToChangelogFile', 'context']
+		// validate parameters.\
+		def unsupportedKeys
+		if ( liquibaseVersion370Plus ) {
+			unsupportedKeys = params.keySet() - ['file', 'relativeToChangelogFile', 'context', 'labels', 'ignore']
+		} else {
+			unsupportedKeys = params.keySet() - ['file', 'relativeToChangelogFile', 'context']
+		}
 		if (unsupportedKeys.size() > 0) {
 			throw new ChangeLogParseException("DatabaseChangeLog:  '${unsupportedKeys.toArray()[0]}' is not a supported attribute of the 'include' element.")
 		}
@@ -168,10 +184,17 @@ class DatabaseChangeLogDelegate {
 			    .changeLogParameters
 			    .expandExpressions(params.file, databaseChangeLog)
 		def includeContexts = new ContextExpression(params.context)
-		databaseChangeLog.include(fileName, relativeToChangelogFile, resourceAccessor,
-				includeContexts, false)
-
-
+		if ( liquibaseVersion370Plus ) {
+			// the new way...
+			def labels = new LabelExpression(params.labels)
+			def ignore = DelegateUtil.parseTruth(params.ignore, false)
+			databaseChangeLog.include(fileName, relativeToChangelogFile, resourceAccessor,
+					includeContexts, labels, ignore, false)
+		} else {
+			// the old way...
+			databaseChangeLog.include(fileName, relativeToChangelogFile, resourceAccessor,
+					includeContexts, false)
+		}
 	}
 
 	/**
@@ -184,14 +207,27 @@ class DatabaseChangeLogDelegate {
 		}
 
 		// validate parameters.
-		def unsupportedKeys = params.keySet() - ['path', 'relativeToChangelogFile', 'errorIfMissingOrEmpty', 'resourceComparator', 'filter', 'context']
+		def unsupportedKeys
+		if ( liquibaseVersion370Plus ) {
+			unsupportedKeys = params.keySet() - ['path', 'relativeToChangelogFile', 'errorIfMissingOrEmpty', 'resourceComparator', 'filter', 'context', 'labels', 'ignore']
+		} else {
+			unsupportedKeys = params.keySet() - ['path', 'relativeToChangelogFile', 'errorIfMissingOrEmpty', 'resourceComparator', 'filter', 'context', 'labels', 'ignore']
+		}
 		if (unsupportedKeys.size() > 0) {
 			throw new ChangeLogParseException("DatabaseChangeLog:  '${unsupportedKeys.toArray()[0]}' is not a supported attribute of the 'includeAll' element.")
 		}
 
 		def relativeToChangelogFile = DelegateUtil.parseTruth(params.relativeToChangelogFile, false)
 		def errorIfMissingOrEmpty = DelegateUtil.parseTruth(params.errorIfMissingOrEmpty, true)
-		def includeContexts = new ContextExpression(params.context)
+		def includeContexts = new ContextExpression(params. context)
+		// The "ignore" flag  is safe to try in all versions of liquibase...
+		def ignore = DelegateUtil.parseTruth(params.ignore, false)
+		// But the labels flags will cause an error if we try to load them in
+		// an older version of liquibase.
+		def labels = null
+		if ( liquibaseVersion370Plus ) {
+			labels = new LabelExpression(params.labels)
+		}
 
 		// Set up the resource comparator.  If one is not given, we'll use the
 		// standard one.
@@ -245,7 +281,7 @@ class DatabaseChangeLogDelegate {
 
 		loadAll(pathName, relativeToChangelogFile, groovyFilter,
 				errorIfMissingOrEmpty, resourceComparator, resourceAccessor,
-				includeContexts)
+				includeContexts, labels, ignore)
 	}
 
 	/**
@@ -303,8 +339,8 @@ class DatabaseChangeLogDelegate {
 
 	def propertyMissing(String name) {
 		def changeLogParameters = databaseChangeLog.changeLogParameters
-		if (changeLogParameters.hasValue(name)) {
-			return changeLogParameters.getValue(name)
+		if (changeLogParameters.hasValue(name, databaseChangeLog)) {
+			return changeLogParameters.getValue(name, databaseChangeLog)
 		} else {
 			throw new MissingPropertyException(name, this.class)
 		}
@@ -344,7 +380,7 @@ class DatabaseChangeLogDelegate {
 	 */
 	private def loadAll(pathName, isRelativeToChangelogFile, resourceFilter,
 	                    errorIfMissingOrEmpty, resourceComparator,
-	                    resourceAccessor, includeContexts) {
+	                    resourceAccessor, includeContexts, labels, ignore) {
 		try {
 			pathName = pathName.replace('\\', '/')
 
@@ -389,8 +425,14 @@ class DatabaseChangeLogDelegate {
 				if ( !pathName.startsWith("classpath") && !pathName.startsWith("/") ) {
 					resourceName = resourceName.substring(resourceName.indexOf(pathName))
 				}
-				databaseChangeLog.include(resourceName, isRelativeToChangelogFile, resourceAccessor,
-						includeContexts, false)
+
+				if ( liquibaseVersion370Plus ) {
+					databaseChangeLog.include(resourceName, isRelativeToChangelogFile, resourceAccessor,
+							includeContexts, labels, ignore, false)
+				} else {
+					databaseChangeLog.include(resourceName, isRelativeToChangelogFile, resourceAccessor,
+							includeContexts, false)
+				}
 			}
 		} catch (Exception e) {
 			throw new ChangeLogParseException(e)

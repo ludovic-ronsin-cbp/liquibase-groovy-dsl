@@ -75,6 +75,8 @@ class ColumnDelegateTests {
 		assertNull delegate.columns[0].autoIncrement
 		assertNull delegate.columns[0].startWith
 		assertNull delegate.columns[0].incrementBy
+		assertNull delegate.columns[0].defaultOnNull
+		assertNull delegate.columns[0].generationType
 		assertNull delegate.columns[0].remarks
 		assertNull delegate.columns[0].descending
 		assertNull delegate.columns[0].constraints
@@ -117,6 +119,8 @@ class ColumnDelegateTests {
 		assertNull delegate.columns[0].autoIncrement
 		assertNull delegate.columns[0].startWith
 		assertNull delegate.columns[0].incrementBy
+		assertNull delegate.columns[0].defaultOnNull
+		assertNull delegate.columns[0].generationType
 		assertNull delegate.columns[0].remarks
 		assertNull delegate.columns[0].descending
 		assertNotNull delegate.columns[0].constraints
@@ -162,6 +166,8 @@ class ColumnDelegateTests {
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
+					defaultOnNull: true,
+					generationType: 'someType',
 					remarks: 'No comment',
 					descending: true
 			)
@@ -192,6 +198,8 @@ class ColumnDelegateTests {
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
+		assertTrue delegate.columns[0].defaultOnNull
+		assertEquals 'someType', delegate.columns[0].generationType
 		assertEquals 'No comment', delegate.columns[0].remarks
 		assertTrue delegate.columns[0].descending
 		assertNull delegate.columns[0].constraints
@@ -303,6 +311,8 @@ class ColumnDelegateTests {
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
+					defaultOnNull: true,
+					generationType: 'someType',
 					remarks: 'No comment',
 					descending: false,
 			        beforeColumn: 'before',
@@ -336,6 +346,8 @@ class ColumnDelegateTests {
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
+		assertTrue delegate.columns[0].defaultOnNull
+		assertEquals 'someType', delegate.columns[0].generationType
 		assertEquals 'No comment', delegate.columns[0].remarks
 		assertFalse delegate.columns[0].descending
 		assertEquals 'before', delegate.columns[0].beforeColumn
@@ -385,6 +397,8 @@ class ColumnDelegateTests {
 					autoIncrement: true, // should be the only true.
 					startWith: 3,
 					incrementBy: 4,
+					defaultOnNull: true,
+					generationType: 'someType',
 					remarks: 'No comment',
 					descending: false,
 			        header: 'columnHeader',
@@ -417,6 +431,8 @@ class ColumnDelegateTests {
 		assertTrue delegate.columns[0].autoIncrement
 		assertEquals 3G, delegate.columns[0].startWith
 		assertEquals 4G, delegate.columns[0].incrementBy
+		assertTrue delegate.columns[0].defaultOnNull
+		assertEquals 'someType', delegate.columns[0].generationType
 		assertEquals 'No comment', delegate.columns[0].remarks
 		assertFalse delegate.columns[0].descending
 		assertEquals 'columnHeader', delegate.columns[0].header

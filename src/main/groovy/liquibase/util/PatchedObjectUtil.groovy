@@ -43,7 +43,7 @@ class PatchedObjectUtil {
 
     private static Map<Class<?>, Method[]> methodCache = new HashMap<Class<?>, Method[]>();
 
-    public static Object getProperty(Object object, String propertyName) throws IllegalAccessException, InvocationTargetException {
+    static Object getProperty(Object object, String propertyName) throws IllegalAccessException, InvocationTargetException {
         Method readMethod = getReadMethod(object, propertyName);
         if (readMethod == null) {
             throw new UnexpectedLiquibaseException("Property '" + propertyName + "' not found on object type " + object.getClass().getName());
@@ -52,19 +52,19 @@ class PatchedObjectUtil {
         return readMethod.invoke(object);
     }
 
-    public static boolean hasProperty(Object object, String propertyName) {
+    static boolean hasProperty(Object object, String propertyName) {
         return hasReadProperty(object, propertyName) && hasWriteProperty(object, propertyName);
     }
 
-    public static boolean hasReadProperty(Object object, String propertyName) {
+    static boolean hasReadProperty(Object object, String propertyName) {
         return getReadMethod(object, propertyName) != null;
     }
 
-    public static boolean hasWriteProperty(Object object, String propertyName) {
+    static boolean hasWriteProperty(Object object, String propertyName) {
         return getWriteMethod(object, propertyName) != null;
     }
 
-    public static void setProperty(Object object, String propertyName, String propertyValue) {
+    static void setProperty(Object object, String propertyName, String propertyValue) {
         Method method = getWriteMethod(object, propertyName);
         if (method == null) {
             throw new UnexpectedLiquibaseException("Property '" + propertyName + "' not found on object type " + object.getClass().getName());
@@ -116,10 +116,14 @@ class PatchedObjectUtil {
 
     private static Method getWriteMethod(Object object, String propertyName) {
         String methodName = "set" + propertyName.substring(0, 1).toUpperCase(Locale.ENGLISH) + propertyName.substring(1);
+        String alternateName = "should" + propertyName.substring(0, 1).toUpperCase(Locale.ENGLISH) + propertyName.substring(1);
+        // Another ugly hack courtesy of the Liquibase 3.7.0 code.  It added
+        // some new attributes to the ConstraintsConfig class that don't have
+        // proper accessors.
         Method[] methods = getMethods(object);
 
         for (Method method : methods) {
-            if (method.getName().equals(methodName) && method.getParameterTypes().length == 1) {
+            if ( (method.getName().equals(methodName) || method.getName().equals(alternateName)) && method.getParameterTypes().length == 1) {
               // This is where the patch is.  The Liquibase version of this
 	            // method simply returns the first one arg method that it finds.
 	            // The patched one returns the first one that has an argument type
