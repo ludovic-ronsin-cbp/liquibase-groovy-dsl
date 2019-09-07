@@ -9,6 +9,13 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
+### September 7, 2019
+Liquibase version 3.8.0 is out, but they have not yet applied the pull requests
+that fix the issues with the new 3.7.0 attributes.  In the meantime, if you 
+depend on Liquibase 3.7.x or newer, and you aren't using the new attributes,
+you can build and use this version of the Groovy DSL.  I'm hoping for a 3.8.1
+release shortly, at which point I'll release the latest version of the DSL.
+
 ### August 20, 2019
 Liquiabse version 3.7.0 is out, but it has caused a couple of issues with the
 Groovy DSL.  If you use one of the following, you won't be able to upgrade 
