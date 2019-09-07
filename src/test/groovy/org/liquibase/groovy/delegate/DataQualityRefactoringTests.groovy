@@ -709,6 +709,7 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertNull changes[0].ordered
 		assertNull changes[0].cycle
 		assertNull changes[0].cacheSize
+		assertNull changes[0].dataType
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
@@ -729,8 +730,9 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 					minValue: 7,
 					maxValue: 6.023E24,
 					ordered: true,
+					cycle: false,
 					cacheSize: 314,
-					cycle: false
+					dataType: 'Number'
 			)
 		}
 
@@ -747,8 +749,9 @@ class DataQualityRefactoringTests extends ChangeSetTests {
 		assertEquals 6023000000000000000000000, changes[0].maxValue
 		assertEquals 8G, changes[0].startValue
 		assertTrue changes[0].ordered
-		assertEquals 314G, changes[0].cacheSize
 		assertFalse changes[0].cycle
+		assertEquals 314G, changes[0].cacheSize
+		assertEquals 'Number', changes[0].dataType
 		assertNotNull changes[0].resourceAccessor
 		assertNoOutput()
 	}
