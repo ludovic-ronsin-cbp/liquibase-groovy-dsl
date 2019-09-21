@@ -9,6 +9,17 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
+### September 21, 2019
+Version 2.1.0 of the Liquibase Groovy DSL has been released to support version
+3.7+ of Liquibase, since it has a change that breaks older versions of the DSL.
+Note that there is a bug in Liquibase, documented in  
+[CORE-3463](https://liquibase.jira.com/browse/CORE-3463).  Until it gets fixed,
+using the new validateXYZ methods of a constraint won't work, but I wanted to 
+release a version that otherwise works with the latest Liquibase releases.  
+I've submitted a [Pull Request](https://github.com/liquibase/liquibase/pull/917) 
+to fix the issue, and as soon as it is incorporated into Liquibase, the Groovy
+DSL should once again be fully compatible with Liquibase.
+
 ### September 7, 2019
 Liquibase version 3.8.0 is out, but they have not yet applied the pull requests
 that fix the issues with the new 3.7.0 attributes.  In the meantime, if you 
@@ -56,7 +67,7 @@ releases.
 Release 2.0.0 has been tested against all the valid elements and attributes of
 Liquibase 3.6.1
 
-**This release has breaking changes,** so make sure to read all the information
+**Release 2.0.0 has breaking changes,** so make sure to read all the information
 in this section before upgrading.
 
 There are several breaking changes with this version of the DSL:
@@ -89,24 +100,6 @@ There are several breaking changes with this version of the DSL:
 5. The `alterSequence` change used to have a `willCycle` attribute.  That 
   attribute is now called `cycle`
 
-### February 23, 2017
-Release 1.2.2 of the Groovy DSL is a minor release that resolves a few bugs. 
-See the CHANGELOG for more details.  Note that if you use this DSL via the 
-Gradle Liquibase plugin, you will need version 1.2.3 of that plugin NOT 1.2.2,
-as that version has a broken dependency on the SNAPSHOT version of the DSL. 
-
-### May 16, 2015
-We are proud to announce that the Liquibase Groovy DSL is now a part of the 
-Liquibase organization.  I will continue maintain the code, but bringing this 
-project into the Liquibase organization will help keep all things Liquibase 
-together in one place.  This will help promote Liquibase adoption by making it
-easier for more people to use, and it will help people stay up to date with the
-latest releases.  As part of that move, the artifact name has changed from 
-`net.saliman:groovy-liquibase-dsl` to `org.liquibase:liquibase-groovy-dsl` to 
-be consistent with the rest of the Liquibase artifacts.  A special thank you to
-Nathan Voxland for his help and support in bringing the Liquibase project and 
-the Groovy DSL together into one home.
- 
 ## Usage
 Simply include this project's jar file in your class path, along with a version
 of Liquibase, a version of Groovy, and your database driver, and Liquibase can
