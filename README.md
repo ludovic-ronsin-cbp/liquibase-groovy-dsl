@@ -13,8 +13,8 @@ maintained by Steve Saliman.
 Version 2.1.0 of the Liquibase Groovy DSL has been released to support version
 3.7+ of Liquibase, since it has a change that breaks older versions of the DSL.
 Note that there is a bug in Liquibase, documented in  
-[CORE-3463](https://liquibase.jira.com/browse/CORE-3463).  Until it gets fixed,
-using the new validateXYZ methods of a constraint won't work, but I wanted to 
+[CORE-3463](https://liquibase.jira.com/browse/CORE-3463) that prevents the DSL
+from parsing the new validateXYZ attributes of a constraint, but I wanted to 
 release a version that otherwise works with the latest Liquibase releases.  
 I've submitted a [Pull Request](https://github.com/liquibase/liquibase/pull/917) 
 to fix the issue, and as soon as it is incorporated into Liquibase, the Groovy
