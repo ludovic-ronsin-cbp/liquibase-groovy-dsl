@@ -9,6 +9,14 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
+### Januart 25, 2020
+Added support for an undocumented ChangeSet attribute.  The XML accepts an 
+attribute named `logicalFilePath`.  The actual ChangeSet property in the source
+code is named `filePath`.  The Groovy DSL now supports both.  The default is 
+still to inherit the filePath from the DatabaseChangeLog.  This resolves Issue
+#45. The bugs in Liquibase 3.7+ still remain as of Liquibase 3.8.5, so use those
+versions with care.
+
 ### September 21, 2019
 Version 2.1.0 of the Liquibase Groovy DSL has been released to support version
 3.7+ of Liquibase, since it has a change that breaks older versions of the DSL.
@@ -330,6 +338,10 @@ sql { """
   specify a command timeout in seconds, minutes, or hours.  For example, to 
   set a 2 minute timeout, you'd use `2m` as the value of the `timeout` 
   attribute.
+* The Liquibase XML accepts a `logicalFilePath` attribute for the `changeSet`
+  element.  The actual property in the ChangeSet class is named `filePath`.  The
+  Groovy DSL accepts both.  The default is to inherit the file path from the 
+  DatabaseChangeLog that contains the ChangeSet. 
 
 ## License
 This code is released under the Apache Public License 2.0, just like Liquibase 2.0.

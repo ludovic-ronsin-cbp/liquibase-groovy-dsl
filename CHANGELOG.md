@@ -1,3 +1,13 @@
+Changes for 2.1.1
+=================
+- Added support for an undocumented ChangeSet attrubute:  The XML uses
+ `logicalFilePath`, the actual ChangeSet property is called `filePath`.  The 
+ DSL now supports both. (Issue #45)
+  
+Changes for 2.1.0
+=================
+- Added support for Liquibase 3.7
+
 Changes for 2.0.3
 =================
 - Changed the way strings are serialized when we run 'generateChangeLog'.  
