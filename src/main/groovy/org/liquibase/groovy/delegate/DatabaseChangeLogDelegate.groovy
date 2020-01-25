@@ -99,6 +99,8 @@ class DatabaseChangeLogDelegate {
 				'failOnError',
 				'onValidationFail',
 				'objectQuotingStrategy',
+				'logicalFilePath',
+				'filePath',
 				'created',
 				'runOrder',
 				'ignore'
@@ -116,12 +118,19 @@ class DatabaseChangeLogDelegate {
 			}
 		}
 
+		def filePath = databaseChangeLog.filePath // default
+		if ( params.containsKey('filePath') ) {
+			filePath = params.filePath
+		}
+		if ( params.containsKey('logicalFilePath') ) {
+			filePath = params.logicalFilePath
+		}
 		def changeSet = new ChangeSet(
 				DelegateUtil.expandExpressions(params.id, databaseChangeLog),
 				DelegateUtil.expandExpressions(params.author, databaseChangeLog),
 				DelegateUtil.parseTruth(params.runAlways, false),
 				DelegateUtil.parseTruth(params.runOnChange, false),
-				databaseChangeLog.filePath,
+				filePath,
 				DelegateUtil.expandExpressions(params.context, databaseChangeLog),
 				DelegateUtil.expandExpressions(params.dbms, databaseChangeLog),
 				DelegateUtil.parseTruth(params.runInTransaction, true),

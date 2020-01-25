@@ -186,7 +186,8 @@ databaseChangeLog()
 	}
 
 	/**
-	 * Test creating a changeSet with all supported attributes.
+	 * Test creating a changeSet with all supported attributes.  We support
+	 * filePath and logicalFilepath.  This test uses filePath
 	 */
 	@Test
 	void changeSetFull() {
@@ -204,7 +205,8 @@ databaseChangeLog()
 					  objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS",
 			          created: 'test_created',
 			          runOrder: 'last',
-			          ignore: true) {
+			          ignore: true,
+			          filePath: 'file_path') {
 			  dropTable(tableName: 'monkey')
 			}
 		}
@@ -215,7 +217,52 @@ databaseChangeLog()
 		assertEquals 'stevesaliman', changeLog.changeSets[0].author
 		assertTrue changeLog.changeSets[0].alwaysRun // the property doesn't match xml or docs.
 		assertTrue changeLog.changeSets[0].runOnChange
-		assertEquals ROOT_CHANGELOG_PATH, changeLog.changeSets[0].filePath
+		assertEquals 'file_path', changeLog.changeSets[0].filePath
+		assertEquals 'testing', changeLog.changeSets[0].contexts.contexts.toArray()[0]
+		assertEquals 'test_label', changeLog.changeSets[0].labels.toString()
+		assertEquals 'mysql', changeLog.changeSets[0].dbmsSet.toArray()[0]
+		assertFalse changeLog.changeSets[0].runInTransaction
+		assertTrue changeLog.changeSets[0].failOnError
+		assertEquals "MARK_RAN", changeLog.changeSets[0].onValidationFail.toString()
+		assertEquals ObjectQuotingStrategy.QUOTE_ONLY_RESERVED_WORDS, changeLog.changeSets[0].objectQuotingStrategy
+		assertEquals 'test_created', changeLog.changeSets[0].created
+		assertEquals 'last', changeLog.changeSets[0].runOrder
+		assertTrue changeLog.changeSets[0].ignore
+	}
+
+	/**
+	 * Test creating a changeSet with all supported attributes.  We support
+	 * filePath and logicalFilepath.  This test uses logicalFilePath
+	 */
+	@Test
+	void changeSetFullLogicalFilePath() {
+		def changeLog = buildChangeLog {
+			changeSet(id: 'monkey-change',
+					  author: 'stevesaliman',
+					  dbms: 'mysql',
+					  runAlways: true,
+					  runOnChange: true,
+					  context: 'testing',
+					  labels: 'test_label',
+					  runInTransaction: false,
+					  failOnError: true,
+					  onValidationFail: "MARK_RAN",
+					  objectQuotingStrategy: "QUOTE_ONLY_RESERVED_WORDS",
+			          created: 'test_created',
+			          runOrder: 'last',
+			          ignore: true,
+			          logicalFilePath: 'file_path') {
+			  dropTable(tableName: 'monkey')
+			}
+		}
+
+		assertNotNull changeLog.changeSets
+		assertEquals 1, changeLog.changeSets.size()
+		assertEquals 'monkey-change', changeLog.changeSets[0].id
+		assertEquals 'stevesaliman', changeLog.changeSets[0].author
+		assertTrue changeLog.changeSets[0].alwaysRun // the property doesn't match xml or docs.
+		assertTrue changeLog.changeSets[0].runOnChange
+		assertEquals 'file_path', changeLog.changeSets[0].filePath
 		assertEquals 'testing', changeLog.changeSets[0].contexts.contexts.toArray()[0]
 		assertEquals 'test_label', changeLog.changeSets[0].labels.toString()
 		assertEquals 'mysql', changeLog.changeSets[0].dbmsSet.toArray()[0]
@@ -230,7 +277,8 @@ databaseChangeLog()
 
 	/**
 	 * Test creating a changeSet with all supported attributes, and one of them
-	 * has an expression to expand.
+	 * has an expression to expand.  This test will omit the filePath and
+	 * logicalFilePath attributes to make sure we get the correct default.
 	 */
 	@Test
 	void changeSetFullWithProperties() {
