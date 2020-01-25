@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import liquibase.exception.Warnings
 import liquibase.statement.SqlStatement
 
 /**
- * Based on liquibase.change.custom.CustomChangeWrapper but more friendly to 
+ * Based on liquibase.change.custom.CustomChangeWrapper but more friendly to
  * programmatic changes instead of XML driven changes
- * 
+ *
  * @author Jason Clawson
  */
 class CustomProgrammaticChangeWrapper extends AbstractChange {
@@ -80,7 +80,7 @@ class CustomProgrammaticChangeWrapper extends AbstractChange {
         else if (customChange instanceof CustomTaskRollback) {
           customChange.rollback(database)
         }
-      } 
+      }
       catch(CustomChangeException e) {
         throw new RollbackImpossibleException(e)
       }
@@ -105,7 +105,7 @@ class CustomProgrammaticChangeWrapper extends AbstractChange {
     try {
       customChange.setFileOpener(getResourceAccessor())
       customChange.setUp()
-    } 
+    }
     catch (Exception e) {
       throw new CustomChangeException(e)
     }

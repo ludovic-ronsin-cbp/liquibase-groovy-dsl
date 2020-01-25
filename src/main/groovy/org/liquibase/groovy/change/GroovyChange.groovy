@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,25 +21,25 @@ import liquibase.database.Database
 
 /**
  * <p></p>
- * 
+ *
  * @author Tim Berglund
  * @author Steven C. Saliman
  */
 class GroovyChange extends AbstractChange {
   def groovyChangeClosure
 
-  
+
   GroovyChange(groovyChangeClosure) {
     super()
     this.groovyChangeClosure = groovyChangeClosure
   }
 
-  
+
   String getConfirmationMessage() {
     "Custom Groovy change executed"
   }
 
-  
+
   SqlStatement[] generateStatements(Database database) {
     return new SqlStatement[0]  //To change body of implemented methods use File | Settings | File Templates.
   }

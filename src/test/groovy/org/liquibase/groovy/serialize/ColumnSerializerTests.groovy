@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import liquibase.change.ConstraintsConfig
 
 /**
  * <p></p>
- * 
+ *
  * @author Steven C. Saliman
  */
 class ColumnSerializerTests extends SerializerTests {
@@ -108,7 +108,7 @@ class ColumnSerializerTests extends SerializerTests {
         uniqueConstraintName: 'unique_monkey_constraint'
       ] as ConstraintsConfig
     ] as ColumnConfig
-    
+
     def serializedText = serializer.serialize(columnConfig, true)
     def expectedText = """\
 column(name: '''column-name''', type: '''varchar''', value: '''value''', defaultValue: '''default-string-value''', remarks: '''No comment''') {

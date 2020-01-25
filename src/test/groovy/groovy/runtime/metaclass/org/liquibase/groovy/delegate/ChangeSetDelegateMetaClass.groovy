@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import org.liquibase.groovy.custom.MyCustomSqlChange
 /**
  * This defines an ExpandoMetaClass on org.liquibase.groovy.delegate.ChangeSetDelegate
  * so that we can manipulate the class at runtime to add new methods.  In this example,
- * we are adding the myCustomSqlChange which will add the MyCustomSqlChange and wrap it 
+ * we are adding the myCustomSqlChange which will add the MyCustomSqlChange and wrap it
  * in the CustomProgrammaticChangeWrapper so it conforms to the liquibase API.
- * 
+ *
  * @author Jason Clawson
  */
 class ChangeSetDelegateMetaClass extends ExpandoMetaClass {
@@ -33,8 +33,8 @@ class ChangeSetDelegateMetaClass extends ExpandoMetaClass {
   ChangeSetDelegateMetaClass(MetaClassRegistry reg, Class clazz) {
     super(clazz, true, false)
 
-    addMetaMethod(new AnonymousMetaMethod({ addChange(new CustomProgrammaticChangeWrapper(new MyCustomSqlChange())) }, 
-      'myCustomSqlChange', 
+    addMetaMethod(new AnonymousMetaMethod({ addChange(new CustomProgrammaticChangeWrapper(new MyCustomSqlChange())) },
+      'myCustomSqlChange',
       clazz))
 
     initialize()

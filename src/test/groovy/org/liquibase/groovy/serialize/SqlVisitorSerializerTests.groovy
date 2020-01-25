@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import liquibase.sql.visitor.ReplaceSqlVisitor
 
 /**
  * <p></p>
- * 
+ *
  * @author Steven C. Saliman
  */
 class SqlVisitorSerializerTests extends SerializerTests {
@@ -30,7 +30,7 @@ class SqlVisitorSerializerTests extends SerializerTests {
   @Test
   void testReplaceSqlVisitorSerialize() {
     def visitor = [
-       
+
     ] as ReplaceSqlVisitor
   }
 }

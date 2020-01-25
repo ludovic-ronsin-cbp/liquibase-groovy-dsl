@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import liquibase.database.Database
 
 /**
  * A dummy change class for unit testing of the custom change mechanism.
- * 
+ *
  * @author Tim Berglund
  */
 class MonkeyChange implements CustomChange {
@@ -34,7 +34,7 @@ class MonkeyChange implements CustomChange {
 
 
   void setUp() {
-    
+
   }
 
 

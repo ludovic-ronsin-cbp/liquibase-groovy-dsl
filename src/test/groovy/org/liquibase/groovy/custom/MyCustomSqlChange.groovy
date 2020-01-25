@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import liquibase.statement.SqlStatement
 import liquibase.statement.core.RawSqlStatement
 
 /**
- * A trivial liquibase CustomSqlChange that will be added to the DSL 
+ * A trivial liquibase CustomSqlChange that will be added to the DSL
  * through groovy metaprogramming
- * 
+ *
  * @see groovy.runtime.metaclass.org.liquibase.groovy.delegate.ChangeSetDelegateMetaClass
  * @author Jason Clawson
  */
-class MyCustomSqlChange 
+class MyCustomSqlChange
   implements CustomSqlChange {
 
   String getConfirmationMessage() {

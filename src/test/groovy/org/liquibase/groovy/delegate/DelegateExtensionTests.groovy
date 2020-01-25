@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 Tim Berglund and Steven C. Saliman
+ * Copyright 2011-2020 Tim Berglund and Steven C. Saliman
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.liquibase.groovy.custom.MyCustomSqlChange
 
 
 /**
- * Test the ability to extend the ChangeSetDelegate through groovy metaprogramming 
+ * Test the ability to extend the ChangeSetDelegate through groovy metaprogramming
  *
  * @author Jason Clawson
  */
