@@ -40,6 +40,12 @@ class DatabaseChangeLogDelegate {
 
 	DatabaseChangeLogDelegate(databaseChangeLog) {
 		this([:], databaseChangeLog)
+	}
+
+
+	DatabaseChangeLogDelegate(Map params, databaseChangeLog) {
+		this.params = params
+		this.databaseChangeLog = databaseChangeLog
 		// Liquiabse 3.7.0 introduced breaking changes in the "include" and
 		// "includeAll" methods, so we're using this nasty little hack to
 		// determine which version we're dealing with.  We'll see if the
@@ -47,14 +53,8 @@ class DatabaseChangeLogDelegate {
 		if ( databaseChangeLog.metaClass.respondsTo(databaseChangeLog, "include",
 				String, boolean, ResourceAccessor, ContextExpression,
 				LabelExpression, Boolean, boolean )) {
-			liquibaseVersion370Plus = true;
+			liquibaseVersion370Plus = true
 		}
-	}
-
-
-	DatabaseChangeLogDelegate(Map params, databaseChangeLog) {
-		this.params = params
-		this.databaseChangeLog = databaseChangeLog
 		// It doesn't make sense to expand expressions, since we haven't loaded
 		// properties yet.
 		params.each { key, value ->

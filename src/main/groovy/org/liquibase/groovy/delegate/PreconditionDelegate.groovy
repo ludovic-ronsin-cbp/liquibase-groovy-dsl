@@ -107,14 +107,16 @@ class PreconditionDelegate {
 		def precondition = new CustomPreconditionWrapper()
 		params.each { key, value ->
 			try {
-				PatchedObjectUtil.setProperty(precondition, key, DelegateUtil.expandExpressions(value, databaseChangeLog))
+				def expandedValue = DelegateUtil.expandExpressions(value, databaseChangeLog)
+				PatchedObjectUtil.setProperty(precondition, key, expandedValue)
 			} catch (RuntimeException e) {
 				throw new ChangeLogParseException("ChangeSet '${changeSetId}': '${key}' is an invalid property for 'customPrecondition' preconditions.", e)
 			}
 		}
 		delegate.map.each { key, value ->
 			// This is a key/value pair in the Liquibase object, so it won't fail.
-			precondition.setParam(key, DelegateUtil.expandExpressions(value, databaseChangeLog))
+			def expandedValue = DelegateUtil.expandExpressions(value, databaseChangeLog).toString()
+			precondition.setParam(key, expandedValue)
 		}
 
 		preconditions << precondition

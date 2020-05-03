@@ -54,6 +54,7 @@ class DatabaseChangeLogDelegateTests {
 	static final TMP_CHANGELOG_DIR = new File(TMP_CHANGELOG_PATH)
 	static final EMPTY_CHANGELOG = "${ROOT_CHANGELOG_PATH}/empty-changelog.groovy"
 	static final SIMPLE_CHANGELOG = "${ROOT_CHANGELOG_PATH}/simple-changelog.groovy"
+	static final FULL_CHANGELOG = "${ROOT_CHANGELOG_PATH}/full-changelog.groovy"
 
 	def resourceAccessor
 	ChangeLogParserFactory parserFactory
@@ -84,7 +85,7 @@ class DatabaseChangeLogDelegateTests {
 
 		assertNotNull "Groovy changelog parser was not found", parser
 
-		def changeLog = parser.parse(EMPTY_CHANGELOG, null, resourceAccessor)
+		def changeLog = parser.parse(EMPTY_CHANGELOG, new ChangeLogParameters(), resourceAccessor)
 		assertNotNull "Parsed DatabaseChangeLog was null", changeLog
 		assertTrue "Parser result was not a DatabaseChangeLog", changeLog instanceof DatabaseChangeLog
 	}
@@ -110,13 +111,30 @@ class DatabaseChangeLogDelegateTests {
 		assertEquals 'change-set-001', changeSet.id
 	}
 
+	@Test
+	void parseFullChangelog() {
+		def parser = parserFactory.getParser(FULL_CHANGELOG, resourceAccessor)
+
+		assertNotNull "Groovy changelog parser was not found", parser
+
+		def changeLog = parser.parse(FULL_CHANGELOG, new ChangeLogParameters(), resourceAccessor)
+		assertNotNull "Parsed DatabaseChangeLog was null", changeLog
+		assertTrue "Parser result was not a DatabaseChangeLog", changeLog instanceof DatabaseChangeLog
+		assertEquals '.', changeLog.logicalFilePath
+
+		def changeSets = changeLog.changeSets
+		// We don't care much about how this one parses, just that it did parse.
+		assertTrue changeSets.size() > 1
+
+	}
+
 	@Test(expected=ChangeLogParseException)
 	void parsingEmptyDatabaseChangeLogFails() {
 		def changeLogFile = createFileFrom(TMP_CHANGELOG_DIR, '.groovy', """
 databaseChangeLog()
 """)
 		def parser = parserFactory.getParser(changeLogFile.absolutePath, resourceAccessor)
-		parser.parse(changeLogFile.absolutePath, null, resourceAccessor)
+		parser.parse(changeLogFile.absolutePath, new ChangeLogParameters(), resourceAccessor)
 	}
 
 
