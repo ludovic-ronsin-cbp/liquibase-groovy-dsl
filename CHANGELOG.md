@@ -1,6 +1,13 @@
+Changes for 2.1.2
+=================
+- Verified that everything still works in Liquibase 3.10.0
+
+- Fixed an issue with include and includeAll changes inside databaseChangeLogs
+  that have parameter maps (Issue #47)
+  
 Changes for 2.1.1
 =================
-- Added support for an undocumented ChangeSet attrubute:  The XML uses
+- Added support for an undocumented ChangeSet attribute:  The XML uses
  `logicalFilePath`, the actual ChangeSet property is called `filePath`.  The 
  DSL now supports both. (Issue #45)
   

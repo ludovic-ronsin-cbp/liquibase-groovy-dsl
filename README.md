@@ -9,7 +9,12 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
-### Januart 25, 2020
+### June 6, 2020
+Release 2.0.4 is a minor release that fixes an issue with `include` 
+and `includeAll` changes nested inside change logs that used the previously
+added `logicalFilePath` support.
+
+### January 25, 2020
 Added support for an undocumented ChangeSet attribute.  The XML accepts an 
 attribute named `logicalFilePath`.  The actual ChangeSet property in the source
 code is named `filePath`.  The Groovy DSL now supports both.  The default is 

@@ -36,7 +36,6 @@ import org.codehaus.groovy.control.CompilerConfiguration
 class GroovyLiquibaseChangeLogParser
   implements ChangeLogParser {
 
-
   DatabaseChangeLog parse(String physicalChangeLogLocation,
                           ChangeLogParameters changeLogParameters,
                           ResourceAccessor resourceAccessor) {
