@@ -10,7 +10,7 @@ maintained by Steve Saliman.
 
 ## News
 ### June 6, 2020
-Release 2.0.4 is a minor release that fixes an issue with `include` 
+Release 2.1.2 is a minor release that fixes an issue with `include` 
 and `includeAll` changes nested inside change logs that used the previously
 added `logicalFilePath` support.
 
