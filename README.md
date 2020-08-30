@@ -9,6 +9,12 @@ project was started once upon a time by Tim Berglund, and is currently
 maintained by Steve Saliman.
 
 ## News
+### August 30, 2020
+This branch of the Liquibase Groovy DSL is a legacy branch for users needing
+Liquibase 3.x support.  I don't expect any future releases of this branch.  All
+future development is going to be against the 3.x releases with full support
+for Liquibase 4.x.
+
 ### June 6, 2020
 Release 2.1.2 is a minor release that fixes an issue with `include` 
 and `includeAll` changes nested inside change logs that used the previously
