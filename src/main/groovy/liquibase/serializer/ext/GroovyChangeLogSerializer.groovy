@@ -16,16 +16,16 @@
 
 package liquibase.serializer.ext
 
-import liquibase.serializer.ChangeLogSerializer
-import liquibase.changelog.ChangeSet
 import liquibase.change.Change
+import liquibase.change.ColumnConfig
+import liquibase.change.ConstraintsConfig
+import liquibase.changelog.ChangeSet
+import liquibase.serializer.ChangeLogSerializer
 import liquibase.serializer.LiquibaseSerializable
 import liquibase.sql.visitor.SqlVisitor
-import liquibase.change.ColumnConfig
 import liquibase.util.ISODateFormat
-import liquibase.change.ConstraintsConfig
-import java.sql.Timestamp
 
+import java.sql.Timestamp
 
 /**
  *  This class is the main Groovy DSL serializer.  It creates Groovy changelogs
@@ -94,7 +94,7 @@ class GroovyChangeLogSerializer
 	// use serialization method defined by the interface.
 
 	private String serializeObject(ChangeSet changeSet) {
-		def attrNames = ['id', 'author', 'runAlways', 'runOnChange', 'failOnError', 'context', 'dbms']
+		def attrNames = ['id', 'author', 'runAlways', 'runOnChange', 'failOnError', 'context', 'dbms', 'runOrder']
 		def attributes = [
 						id    : changeSet.id,
 						author: changeSet.author
@@ -127,6 +127,10 @@ class GroovyChangeLogSerializer
 
 		if ( changeSet.comments?.trim() ) {
 			children << "comment \"${changeSet.comments.replaceAll('"', '\\\"')}\""
+		}
+
+		if (changeSet.runOrder) {
+			attributes.runOrder = changeSet.runOrder
 		}
 
 		changeSet.changes.each { change -> children << serialize(change, true) }
